@@ -1,0 +1,284 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".ActivityRegistration">
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="16dp"
+                android:background="@drawable/item_round_corners"
+                android:elevation="8dp"
+                android:orientation="vertical"
+                android:padding="8dp"
+                android:visibility="visible"
+                tools:visibility="visible">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:text="Wybierz czy jesteś wykonawcą  czy szukasz wykonawcy"
+                    android:textAllCaps="false"
+                    android:textColor="@color/colorPrimaryDarkBlue900"
+                    android:textSize="12sp" />
+
+
+                <Spinner
+                    android:id="@+id/spinnerTypeOfUser"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="32dp" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:text="Wybierz województwo"
+                    android:textAllCaps="false"
+                    android:textColor="@color/colorPrimaryDarkBlue900"
+                    android:textSize="12sp" />
+
+                <Spinner
+                    android:id="@+id/spinnerRegions"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="32dp" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:text="Wpisz e-mail"
+                    android:textAllCaps="false"
+                    android:textColor="@color/colorPrimaryDarkBlue900"
+                    android:textSize="12sp" />
+
+
+                <EditText
+                    android:id="@+id/editTextEmail"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="32dp"
+                    android:layout_marginEnd="32dp"
+                    android:ems="10"
+                    android:hint="Email"
+                    android:inputType="textEmailAddress" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:text="Wpisz miasto"
+                    android:textAllCaps="false"
+                    android:textColor="@color/colorPrimaryDarkBlue900"
+                    android:textSize="12sp" />
+
+
+                <EditText
+                    android:id="@+id/editTextCity"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="32dp"
+                    android:layout_marginEnd="32dp"
+                    android:ems="10"
+                    android:hint="Miasto"
+                    android:inputType="textPersonName" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/linLayCraftsMan"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="16dp"
+                android:background="@drawable/item_round_corners"
+                android:elevation="8dp"
+                android:orientation="vertical"
+                android:padding="8dp"
+                android:visibility="visible"
+                tools:visibility="visible">
+
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:text="Wpisz numer telefonu"
+                    android:textAllCaps="false"
+                    android:textColor="@color/colorPrimaryDarkBlue900"
+                    android:textSize="12sp" />
+
+                <EditText
+                    android:id="@+id/editTextPhoneNumber"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="32dp"
+                    android:layout_marginEnd="32dp"
+                    android:ems="10"
+                    android:hint="123456789"
+                    android:inputType="number" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:text="Wpisz imię i nazwisko lub nazwę firmy"
+                    android:textAllCaps="false"
+                    android:textColor="@color/colorPrimaryDarkBlue900"
+                    android:textSize="12sp" />
+
+                <EditText
+                    android:id="@+id/editTextName"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="32dp"
+                    android:layout_marginEnd="32dp"
+                    android:ems="10"
+                    android:hint="Jan Kowalski" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:text="Wybierz z listy swoją profesję i zaznacz o jakich ogłoszeniach chesz dostawać powiadomienia mailem."
+                    android:textAllCaps="false"
+                    android:textColor="@color/colorPrimaryDarkBlue900"
+                    android:textSize="12sp" />
+
+
+                <Spinner
+                    android:id="@+id/spinnerIndustriesToChose"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="32dp" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="16dp"
+                android:background="@drawable/item_round_corners"
+                android:elevation="8dp"
+                android:orientation="vertical"
+                android:padding="8dp"
+                android:visibility="visible"
+                tools:visibility="visible">
+
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:text="Wpisz hasło"
+                    android:textAllCaps="false"
+                    android:textColor="@color/colorPrimaryDarkBlue900"
+                    android:textSize="12sp" />
+
+                <EditText
+                    android:id="@+id/editTextPassword"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="32dp"
+                    android:layout_marginEnd="32dp"
+                    android:ems="10"
+                    android:hint="Hasło"
+                    android:inputType="textPassword" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:text="Wpisz ponownie hasło"
+                    android:textAllCaps="false"
+                    android:textColor="@color/colorPrimaryDarkBlue900"
+                    android:textSize="12sp" />
+
+                <EditText
+                    android:id="@+id/editTextPasswordChecked"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="32dp"
+                    android:layout_marginEnd="32dp"
+                    android:ems="10"
+                    android:hint="Potwierdź hasło"
+                    android:inputType="textPassword" />
+            </LinearLayout>
+
+            <Button
+                android:id="@+id/buttonRegistry"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:layout_marginBottom="16dp"
+                android:background="@drawable/button_custom_dark"
+                android:text="   Zarejestruj   "
+                android:textColor="@color/colorWhite"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/textViewLub"
+                android:layout_gravity="center_horizontal"/>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="16dp"
+                android:background="@drawable/item_round_corners"
+                android:elevation="8dp"
+                android:orientation="vertical"
+                android:padding="8dp"
+                android:visibility="visible"
+                tools:visibility="visible">
+
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:text="Wpisz token który otrzymałeś na podany edres e-mail"
+                    android:textAllCaps="false"
+                    android:textColor="@color/colorPrimaryDarkBlue900"
+                    android:textSize="12sp" />
+
+                <EditText
+                    android:id="@+id/editTextTokenFromEmail"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="32dp"
+                    android:layout_marginEnd="32dp"
+                    android:ems="10"
+                    android:hint="Token" />
+
+            </LinearLayout>
+
+            <Button
+                android:id="@+id/buttonLogin"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:layout_marginBottom="16dp"
+                android:background="@drawable/button_custom_dark"
+                android:text="Zaloguj"
+                android:textColor="@color/colorWhite"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/buttonZapomnialemHasla"
+                android:layout_gravity="center_horizontal"/>
+
+
+        </LinearLayout>
+    </ScrollView>
+
+</androidx.constraintlayout.widget.ConstraintLayout>
