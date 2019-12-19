@@ -1,16 +1,21 @@
 package com.wolfmobileapps.gofix;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.ProgressBar;
+import android.widget.Toast;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -65,17 +70,9 @@ public class ActivityIndustries extends AppCompatActivity {
         adapterForIndustries = new AdapterForIndustries(this,0,listOfIndustries);
         listViewIndustries.setAdapter(adapterForIndustries);
 
-
-
-
         // tymczasowe czyszczenie tokena w shar pref zeby sie właczało logowanie
-        editor.putString(C.KEY_FOR_SHAR_TOKEN, "");
-        editor.apply();
-
-
-
-
-
+//        editor.putString(C.KEY_FOR_SHAR_TOKEN, "");
+//        editor.apply();
 
         // list View on Click
         listViewIndustries.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -94,10 +91,7 @@ public class ActivityIndustries extends AppCompatActivity {
                 //narazie nic nie robi
             }
         });
-
-
     }
-
 
     // pobranie listy branż i dodanie do Array Adapter
     public void getDataFromUrl (String Url) {
@@ -137,4 +131,50 @@ public class ActivityIndustries extends AppCompatActivity {
         });
         queue.add(jsonArrayRequest); //wywołanie klasy
     }
+
+    // do menu
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_industries, menu);
+        return super.onCreateOptionsMenu(menu);
+    }
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()){
+            case R.id.menu_info:
+                startActivity(new Intent(ActivityIndustries.this, ActivityInfo.class));
+                break;
+
+            case R.id.menu_user:
+                // jeśli ktoś jest NIE zalogowany czyli nie ma zapisanego tokenu to odeśle go do strony logowania
+                if (shar.getString(C.KEY_FOR_SHAR_TOKEN, "").equals("")){
+                    AlertDialog.Builder builder = new AlertDialog.Builder(ActivityIndustries.this);
+                    builder.setTitle("Logowanie");
+                    builder.setMessage("Aby przejść do Panelu Użytkownika musisz być zalogowany");
+                    builder.setPositiveButton("Zaloguj", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            Intent currentIntent = new Intent(ActivityIndustries.this, ActivityLogin.class);
+                            startActivity(currentIntent);
+                            finish();
+                        }
+                    }).setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            // do something when click cancel
+                        }
+                    }).create();
+                    builder.show();
+                }else {
+                    // jeśli ktoś jest zalogowany czyli ma zapisany token w shar pref to ominie logowanie i przejdzie dalej
+                    startActivity(new Intent(ActivityIndustries.this, ActivityUserMain.class));
+                }
+
+
+
+                break;
+        }
+        return super.onOptionsItemSelected(item);//nie usuwać bo up button nie działa
+    }
+
 }

@@ -1,7 +1,9 @@
 package com.wolfmobileapps.gofix;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -69,22 +71,22 @@ public class ActivityLogin extends AppCompatActivity {
 
                 // sprawdzenie czy editTextEmail nie jest null
                 if (editTextEmail.getText() == null) {
-                    Toast.makeText(ActivityLogin.this, "Wpisz adres e-mail", Toast.LENGTH_SHORT).show();
+                    showAlertDialog("Wpisz adres e-mail"); // utworzenie alert Didalog
                     return;
                 }
                 // sprawdzenie czy editTextEmail nie jest ""
-                if (editTextEmail.getText().toString().equals("")) {
-                    Toast.makeText(ActivityLogin.this, "Wpisz adres e-mail", Toast.LENGTH_SHORT).show();
+                if (editTextEmail.getText().toString().trim().equals("")) {
+                    showAlertDialog("Wpisz adres e-mail"); // utworzenie alert Didalog
                     return;
                 }
                 // sprawdzenie czy editTextHaslo nie jest null
                 if (editTextHaslo.getText() == null) {
-                    Toast.makeText(ActivityLogin.this, "Wpisz hasło", Toast.LENGTH_SHORT).show();
+                    showAlertDialog("Wpisz hasło"); // utworzenie alert Didalog
                     return;
                 }
                 // sprawdzenie czy editTextHaslo nie jest ""
-                if (editTextHaslo.getText().toString().equals("")) {
-                    Toast.makeText(ActivityLogin.this, "Wpisz hasło", Toast.LENGTH_SHORT).show();
+                if (editTextHaslo.getText().toString().trim().equals("")) {
+                    showAlertDialog("Wpisz hasło"); // utworzenie alert Didalog
                     return;
                 }
 
@@ -101,7 +103,7 @@ public class ActivityLogin extends AppCompatActivity {
 
                     // wysłanie loginu i hasła
                     String url = C.API + "user/auth";
-                    sendLogin(url,json);
+                    sendLogin(url, json);
 
                 } catch (JSONException e) {
                     Log.d(TAG, "JSONException: " + e);
@@ -128,7 +130,7 @@ public class ActivityLogin extends AppCompatActivity {
     }
 
     // wysłąnie loginu i hasła
-    public void sendLogin (String Url, JSONObject json) {
+    public void sendLogin(String Url, JSONObject json) {
 
         Log.d(TAG, "sendLogin: JSONObject: " + json);
         Log.d(TAG, "sendLogin: Url: " + Url);
@@ -148,9 +150,12 @@ public class ActivityLogin extends AppCompatActivity {
                     Log.d(TAG, "onResponse token: " + token);
 
                     //otwarcie nowego activity i zamknięcie tego
-                    Intent intent = new Intent(ActivityLogin.this, ActivityOrderDescription.class);
+                    Intent intent = new Intent(ActivityLogin.this, ActivityIndustries.class);
                     startActivity(intent);
                     finish();
+
+                    // toast o poprawnym logowaniu
+                    Toast.makeText(ActivityLogin.this, "Zalogowano", Toast.LENGTH_SHORT).show();
 
                 } catch (JSONException e) {
                     e.printStackTrace();
@@ -163,13 +168,13 @@ public class ActivityLogin extends AppCompatActivity {
                 Log.d(TAG, "onErrorResponse: " + error);
 
             }
-        }){
+        }) {
             //Network response - jeśili jest inny niż 200 to pokaże error
             @Override
             protected Response<JSONObject> parseNetworkResponse(NetworkResponse response) {
                 int mStatusCode = response.statusCode; //Network response np 200 czyli success
                 Log.d(TAG, "parseNetworkResponse: " + mStatusCode);
-                if (mStatusCode != 200){
+                if (mStatusCode != 200) {
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
@@ -181,11 +186,27 @@ public class ActivityLogin extends AppCompatActivity {
             }
         };
         queue.add(jsonObjectRequest); //wywołanie klasy
-}}
+    }
+
+    // utworzenie alert Didalog
+    public void showAlertDialog(String alertMessage){
+        AlertDialog.Builder builder = new AlertDialog.Builder(ActivityLogin.this);
+        builder.setTitle("Error");
+        builder.setMessage(alertMessage);
+        builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+
+            }
+        }).create();
+        builder.show();
+    }
+}
 
 
 
-// klasa do wysłąnia loginu i hasła na serwer
+
+// klasa do wysłąnia loginu i hasła na serwer ____________________________________________________________________________________
 class Login {
 
     String email;

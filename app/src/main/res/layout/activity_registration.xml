@@ -16,15 +16,14 @@
             android:orientation="vertical">
 
             <LinearLayout
+                android:id="@+id/linLayMain"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_margin="16dp"
                 android:background="@drawable/item_round_corners"
                 android:elevation="8dp"
                 android:orientation="vertical"
-                android:padding="8dp"
-                android:visibility="visible"
-                tools:visibility="visible">
+                android:padding="8dp">
 
                 <TextView
                     android:layout_width="match_parent"
@@ -61,6 +60,24 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="16dp"
+                    android:text="Wpisz imię i nazwisko lub nazwę firmy"
+                    android:textAllCaps="false"
+                    android:textColor="@color/colorPrimaryDarkBlue900"
+                    android:textSize="12sp" />
+
+                <EditText
+                    android:id="@+id/editTextName"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="32dp"
+                    android:layout_marginEnd="32dp"
+                    android:ems="10"
+                    android:hint="Jan Kowalski" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
                     android:text="Wpisz e-mail"
                     android:textAllCaps="false"
                     android:textColor="@color/colorPrimaryDarkBlue900"
@@ -76,6 +93,18 @@
                     android:ems="10"
                     android:hint="Email"
                     android:inputType="textEmailAddress" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/linLayCity"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="16dp"
+                android:background="@drawable/item_round_corners"
+                android:elevation="8dp"
+                android:orientation="vertical"
+                android:padding="8dp">
 
                 <TextView
                     android:layout_width="match_parent"
@@ -99,6 +128,7 @@
 
             </LinearLayout>
 
+
             <LinearLayout
                 android:id="@+id/linLayCraftsMan"
                 android:layout_width="match_parent"
@@ -107,10 +137,7 @@
                 android:background="@drawable/item_round_corners"
                 android:elevation="8dp"
                 android:orientation="vertical"
-                android:padding="8dp"
-                android:visibility="visible"
-                tools:visibility="visible">
-
+                android:padding="8dp">
 
                 <TextView
                     android:layout_width="match_parent"
@@ -121,33 +148,29 @@
                     android:textColor="@color/colorPrimaryDarkBlue900"
                     android:textSize="12sp" />
 
-                <EditText
-                    android:id="@+id/editTextPhoneNumber"
+                <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="32dp"
                     android:layout_marginEnd="32dp"
-                    android:ems="10"
-                    android:hint="123456789"
-                    android:inputType="number" />
+                    android:orientation="horizontal">
 
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="16dp"
-                    android:text="Wpisz imię i nazwisko lub nazwę firmy"
-                    android:textAllCaps="false"
-                    android:textColor="@color/colorPrimaryDarkBlue900"
-                    android:textSize="12sp" />
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_vertical"
+                        android:text="+48 "
+                        android:textSize="18sp" />
 
-                <EditText
-                    android:id="@+id/editTextName"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="32dp"
-                    android:layout_marginEnd="32dp"
-                    android:ems="10"
-                    android:hint="Jan Kowalski" />
+                    <EditText
+                        android:id="@+id/editTextPhoneNumber"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:ems="10"
+                        android:hint="600600600"
+                        android:inputType="phone" />
+                </LinearLayout>
+
 
                 <TextView
                     android:layout_width="match_parent"
@@ -158,24 +181,30 @@
                     android:textColor="@color/colorPrimaryDarkBlue900"
                     android:textSize="12sp" />
 
-
                 <Spinner
                     android:id="@+id/spinnerIndustriesToChose"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:layout_height="match_parent"
                     android:layout_marginStart="32dp" />
+
+
+                <GridView
+                    android:id="@+id/gridViewServices"
+                    android:layout_width="match_parent"
+                    android:layout_height="250dp"
+                    android:numColumns="auto_fit" />
+
             </LinearLayout>
 
             <LinearLayout
+                android:id="@+id/linLayPassword"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_margin="16dp"
                 android:background="@drawable/item_round_corners"
                 android:elevation="8dp"
                 android:orientation="vertical"
-                android:padding="8dp"
-                android:visibility="visible"
-                tools:visibility="visible">
+                android:padding="8dp">
 
 
                 <TextView
@@ -221,6 +250,7 @@
                 android:id="@+id/buttonRegistry"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
                 android:layout_marginTop="16dp"
                 android:layout_marginBottom="16dp"
                 android:background="@drawable/button_custom_dark"
@@ -228,10 +258,10 @@
                 android:textColor="@color/colorWhite"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/textViewLub"
-                android:layout_gravity="center_horizontal"/>
+                app:layout_constraintTop_toBottomOf="@+id/textViewLub" />
 
             <LinearLayout
+                android:id="@+id/linLayTokenNumber"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_margin="16dp"
@@ -239,7 +269,7 @@
                 android:elevation="8dp"
                 android:orientation="vertical"
                 android:padding="8dp"
-                android:visibility="visible"
+                android:visibility="invisible"
                 tools:visibility="visible">
 
 
@@ -267,6 +297,7 @@
                 android:id="@+id/buttonLogin"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
                 android:layout_marginTop="16dp"
                 android:layout_marginBottom="16dp"
                 android:background="@drawable/button_custom_dark"
@@ -275,7 +306,8 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/buttonZapomnialemHasla"
-                android:layout_gravity="center_horizontal"/>
+                android:visibility="invisible"
+                tools:visibility="visible" />
 
 
         </LinearLayout>
