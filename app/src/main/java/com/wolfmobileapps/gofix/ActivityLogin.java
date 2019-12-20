@@ -34,11 +34,11 @@ public class ActivityLogin extends AppCompatActivity {
     private static final String TAG = "ActivityLogin";
 
     //views
-    EditText editTextEmail;
-    EditText editTextHaslo;
-    Button buttonZaloguj;
-    Button buttonZarejestruj;
-    Button buttonZapomnialemHasla;
+    private EditText editTextEmail;
+    private EditText editTextHaslo;
+    private Button buttonZaloguj;
+    private Button buttonZarejestruj;
+    private Button buttonZapomnialemHasla;
 
     //shared pred
     private SharedPreferences shar;

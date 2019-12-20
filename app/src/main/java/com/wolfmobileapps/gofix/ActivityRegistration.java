@@ -29,7 +29,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 
 
 public class ActivityRegistration extends AppCompatActivity {
@@ -37,43 +36,49 @@ public class ActivityRegistration extends AppCompatActivity {
     private static final String TAG = "ActivityRegistration";
 
     //views
-    LinearLayout linLayMain;
-    LinearLayout linLayCity;
-    LinearLayout linLayCraftsMan;
-    LinearLayout linLayPassword;
-    LinearLayout linLayTokenNumber;
-    Spinner spinnerTypeOfUser;
-    Spinner spinnerRegions;
-    Spinner spinnerIndustriesToChose;
-    GridView gridViewServices;
-    EditText editTextName;
-    EditText editTextEmail;
-    EditText editTextCity;
-    EditText editTextPhoneNumber;
-    EditText editTextPassword;
-    EditText editTextPasswordChecked;
-    EditText editTextTokenFromEmail;
-    Button buttonRegistry;
-    Button buttonLogin;
+    private LinearLayout linLayMain;
+    private LinearLayout linLayCity;
+    private LinearLayout linLayCraftsMan;
+    private LinearLayout linLayPassword;
+    private LinearLayout linLayTokenNumber;
+    private Spinner spinnerTypeOfUser;
+    private Spinner spinnerRegions;
+    private Spinner spinnerIndustriesToChose;
+    private GridView gridViewServices;
+    private EditText editTextName;
+    private EditText editTextEmail;
+    private EditText editTextCity;
+    private EditText editTextPhoneNumber;
+    private EditText editTextPassword;
+    private EditText editTextPasswordChecked;
+    private EditText editTextTokenFromEmail;
+    private Button buttonRegistry;
+    private Button buttonLogin;
 
     //shared pred
     private SharedPreferences shar;
     private SharedPreferences.Editor editor;
 
-    // lista wojewodztw
-    private ArrayList<String> listRegions;
-    ArrayAdapter<String> spinnerArrayAdapterRegions;
+    // lista regions
+    private ArrayList<String> listRegionsStrings; // lista Stringów do wyświetlania w spinnerze
+    private ArrayList<Integer> listRegionsId; // równoległa lista Id Stringów ze spinnera
+    private ArrayAdapter<String> spinnerArrayAdapterRegions;
 
     // lista Industries i Services
-    private ArrayList<String> listOfIndustries;
-    private ArrayList<String> listOfCurrentServises;
+    private ArrayList<String> listOfIndustriesString; // lista Stringów do wyświetlania w spinnerze
+    private ArrayList<Integer> listOfIndustriesId; // równoległa lista Id Stringów ze spinnera
+    private ArrayList<Services> listOfCurrentServises;
+    private ArrayList<String> listOfCurrentServisesToString; // lista samych stringów wyciągnięta z listOfCurrentServises żeby dodać do checkboxów
     ArrayAdapter<String> spinnerArrayAdapterIndustries;
 
     //dane do wysłania na server
     boolean isCraftsman;
     int regionID;
     int industriesID;
-    ArrayList<Integer> listOfServicesIdToSend;
+    private ArrayList<Integer> listOfServicesIdToSend;
+
+    // JSon Array wszystkich Industries i Services pobrana z API
+    private JSONArray jsonArrayOfAllIndustries;
 
 
     @Override
@@ -116,8 +121,10 @@ public class ActivityRegistration extends AppCompatActivity {
         getDataRegionsAndPutOnSpinner(C.API + "regions");
 
         // instancja różnych list
-        listOfIndustries = new ArrayList<>();
+        listOfIndustriesString = new ArrayList<>(); // lista Stringów do wyświetlania w spinnerze
+        listOfIndustriesId = new ArrayList<>(); // równoległa lista Id Stringów ze spinnera
         listOfCurrentServises = new ArrayList<>();
+        listOfCurrentServisesToString = new ArrayList<>();
         listOfServicesIdToSend = new ArrayList<>();
 
         // pobranie danych industries i services z shar i dodanie do spinnera
@@ -322,8 +329,9 @@ public class ActivityRegistration extends AppCompatActivity {
     // pobranie listy województw, dodanie do listy i ustawienie na spinnerze
     public void getDataRegionsAndPutOnSpinner (String Url) {
 
-        // lista wojewodztw
-        listRegions = new ArrayList<>();
+        // listy równoległe - jedna ze stringami a druga z ID regions
+        listRegionsStrings = new ArrayList<>();
+        listRegionsId = new ArrayList<>();
 
         RequestQueue queue = Volley.newRequestQueue(this); // utworzenie requst - może być inne np o stringa lub JsonArrray
         String url = Url; //url
@@ -331,27 +339,29 @@ public class ActivityRegistration extends AppCompatActivity {
             @Override
             public void onResponse(JSONArray response) {
 
-                // pobranie listy województw z API i zapisanie jej do listRegions
+                // pobranie listy województw z API i zapisanie jej do listRegionsStrings
                 for (int i = 0; i < response.length(); i++) {
                     try {
                         JSONObject jsonObject = response.getJSONObject(i);
                         String name = jsonObject.getString("name");
-                        listRegions.add(name);
+                        int id = jsonObject.getInt("id");
+                        listRegionsStrings.add(name); // lista Stringów do wyświetlania w spinnerze
+                        listRegionsId.add(id); // równoległa lista Id Stringów ze spinnera
 
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
                 }
 
-                // ustawienie listRegions na spinnerRegions
-                spinnerArrayAdapterRegions = new ArrayAdapter<>(ActivityRegistration.this, android.R.layout.simple_list_item_1, listRegions);
+                // ustawienie listRegionsStrings na spinnerRegions
+                spinnerArrayAdapterRegions = new ArrayAdapter<>(ActivityRegistration.this, android.R.layout.simple_list_item_1, listRegionsStrings);
                 spinnerRegions.setAdapter(spinnerArrayAdapterRegions);
                 spinnerRegions.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
                     @Override
                     public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
 
                         // zapisanie do regionID żeby potem wysłać na server
-                        regionID = position + 1;
+                        regionID = listRegionsId.get(position); // pobranie ID z równoległej listy Id Stringów ze spinnera
                         Log.d(TAG, "onItemSelected: regionID: " + regionID);
                     }
                     @Override
@@ -376,53 +386,74 @@ public class ActivityRegistration extends AppCompatActivity {
         final String industriesAndServices = shar.getString(C.KEY_FOR_SHAR_INDUSTRIES_AND_SERVICES, "");
         if (industriesAndServices != "") {
             try {
-                final JSONArray jsonArrayOfAllIndustries = new JSONArray(industriesAndServices); // JSONArray wszystkiego pobrana ze stringa
+                jsonArrayOfAllIndustries = new JSONArray(industriesAndServices); // JSONArray wszystkiego pobrana ze stringa
                 for (int i = 0; i < jsonArrayOfAllIndustries.length(); i++) {
                     JSONObject jsonObject = jsonArrayOfAllIndustries.getJSONObject(i);
                     String name = jsonObject.getString("name");
-                    listOfIndustries.add(name);
+                    listOfIndustriesString.add(name); // lista ID stringów ze spinnera
+                    int id = jsonObject.getInt("id");
+                    listOfIndustriesId.add(id); // równoległą lista Id Stringów ze spinnera
                 }
 
                 // ustawienie Industries na spinnerIndustriesToChose
-                spinnerArrayAdapterIndustries = new ArrayAdapter<>(ActivityRegistration.this, android.R.layout.simple_list_item_1, listOfIndustries);
+                spinnerArrayAdapterIndustries = new ArrayAdapter<>(ActivityRegistration.this, android.R.layout.simple_list_item_1, listOfIndustriesString);
                 spinnerIndustriesToChose.setAdapter(spinnerArrayAdapterIndustries);
                 spinnerIndustriesToChose.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
                     @Override
                     public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
 
                         //zapisanie industriesID i wyczyszczenie listy of sevices za każdym razem gdy się zmienia industriesID
-                        industriesID = position + 1;
-                        listOfServicesIdToSend.clear();
-                        Log.d(TAG, "onItemSelected: position: " + position + "\n industriesID: " + industriesID);
+                        industriesID = listOfIndustriesId.get(position); // dodanie ID z listy  listOfIndustriesId która jest na tej samej posycji co dany string
+                        listOfServicesIdToSend.clear(); // listOfServicesIdToSend to lista elementów które mająbyćwysłane jak już user będzie się rejestrował
+                        Log.d(TAG, "onItemSelected: industriesID: " + industriesID);
 
 
                         // zapisanie do listOfCurrentServises wszystkich services z wybranego na spinnerIndustriesToChose industry
-                        listOfCurrentServises.clear(); // wyczyszczenie listy przed dodaniem nowych elementów
+                        listOfCurrentServises.clear(); // wyczyszczenie listy przed dodaniem nowych elementów, listOfCurrentServises to lista wszystkich servisów danego industry wybranego z listy na spinnerze
+                        listOfCurrentServisesToString.clear(); // wyczyszczenie listy przed dodaniem nowych elementów, listOfCurrentServisesToString to lista równoległa do listOfCurrentServises tylko z samymi stringami
                         try {
-                            JSONObject jsonObjectOfCurrentServices = jsonArrayOfAllIndustries.getJSONObject(position);
-                            JSONArray jsonArrayOfCurrentServices =  jsonObjectOfCurrentServices.getJSONArray("services"); // JSONArray servises aktualnie wybraeego ze spinera industry
-                            for (int i = 0; i < jsonArrayOfCurrentServices.length(); i++) {
-                                JSONObject jsonObject = jsonArrayOfCurrentServices.getJSONObject(i);
-                                String name = jsonObject.getString("name");
-                                listOfCurrentServises.add(name);
+
+                            // dodanie nazwy i jsonObject zgodnej z pobranym ID do text view
+                            JSONObject jsonObjectOfCurrentServices = null;
+                            for (int i = 0; i < jsonArrayOfAllIndustries.length(); i++) { // jsonArrayOfAllIndustries to JSONArray wszystkiego pobrana ze stringa z API
+                                JSONObject currentJSONObjectForName = jsonArrayOfAllIndustries.getJSONObject(i);
+                                int currrentObjectID = currentJSONObjectForName.getInt("id");
+                                if (industriesID == currrentObjectID) {
+                                    jsonObjectOfCurrentServices = currentJSONObjectForName; // dodanie obiektu zgodnego z pobranym ID żeby potem rozpakować servisy
+                                }
                             }
 
+                            // dodanie services do listy
+                            JSONArray jsonArrayOfCurrentServices =  jsonObjectOfCurrentServices.getJSONArray("services"); // JSONArray servises aktualnie wybraeego ze spinera industry
+                            for (int i = 0; i < jsonArrayOfCurrentServices.length(); i++) {
+                                JSONObject currentJSONObject = jsonArrayOfCurrentServices.getJSONObject(i);
+                                String currentName = currentJSONObject.getString("name");
+                                int currentId = currentJSONObject.getInt("id");
+                                int currentIndustry_id = currentJSONObject.getInt("industry_id");
+                                listOfCurrentServises.add(new Services(currentId, currentIndustry_id, currentName));
+                                listOfCurrentServisesToString.add(currentName); // zrobienie nowej listy tyko ze stringami takiej samej jak listOfCurrentServises
+                            }
+
+                            Log.d(TAG, "onItemSelected: listOfCurrentServises size: " + listOfCurrentServises.size());
+                            Log.d(TAG, "onItemSelected: listOfCurrentServisesToString size: " + listOfCurrentServisesToString.size());
+
                             // ustawienie listOfCurrentServises w checkBoxach
-                            ArrayAdapter<String> adapretGridView = new ArrayAdapter<String>(ActivityRegistration.this, R.layout.layout_to_grid_checkbox, listOfCurrentServises );
+                            ArrayAdapter<String> adapretGridView = new ArrayAdapter<String>(ActivityRegistration.this, R.layout.layout_to_grid_checkbox, listOfCurrentServisesToString );
                             gridViewServices.setAdapter(adapretGridView);
                             gridViewServices.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                                 @Override
                                 public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 
-                                    // zaznaczenie danego checkBoxa
+                                    // zaznaczenie danego checkBoxa i dodanie do listy jego ID
+                                    Services currentService = listOfCurrentServises.get(position); // pobranie elementu listOfCurrentServises na podstawie pozycji z listOfCurrentServisesToString
                                     CheckedTextView currentCheckedTextView =  view.findViewById(R.id.checkedTextView);
                                     if (currentCheckedTextView.isChecked()){ // jeśli check box jest zaznaczony to odznaczy
                                         currentCheckedTextView.setChecked(false);
-                                        listOfServicesIdToSend.remove(Integer.valueOf(position + 1)); // usunięcie z listy wybranego check boxa z service
+                                        listOfServicesIdToSend.remove(Integer.valueOf(currentService.getId())); // usunięcie z listy wybranego check boxa z service
 
                                     }else {
                                         currentCheckedTextView.setChecked(true); //jeśli check box jest odznaczony to zaznaczy
-                                        listOfServicesIdToSend.add(position + 1); // dodanie do listy wybranego check boxa z service
+                                        listOfServicesIdToSend.add(currentService.getId()); // dodanie do listy wybranego check boxa z service
                                     }
                                     Log.d(TAG, "onItemClick: listOfServicesIdToSend: " + listOfServicesIdToSend.toString());
 
@@ -457,4 +488,31 @@ public class ActivityRegistration extends AppCompatActivity {
         builder.show();
     }
 
+}
+
+
+class Regions {
+    int id;
+    String name;
+
+    public Regions(int id, String name) {
+        this.id = id;
+        this.name = name;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
 }

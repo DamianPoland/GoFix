@@ -9,17 +9,17 @@ import android.widget.TextView;
 
 import java.util.List;
 
-public class AdapterForIndustries extends ArrayAdapter<String> {
+public class AdapterForIndustries extends ArrayAdapter<Industries> {
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-        String currentItem = getItem(position);
+        Industries currentItem = getItem(position);
         if (convertView==null){
             convertView= LayoutInflater.from(getContext()).inflate(R.layout.layout_for_industries,parent,false);
         }
         TextView textIndustries = convertView.findViewById(R.id.textViewIndustries);
 
-        textIndustries.setText(currentItem);
+        textIndustries.setText(currentItem.getName());
         return convertView;
     }
     public AdapterForIndustries(Context context, int resource, List objects) {

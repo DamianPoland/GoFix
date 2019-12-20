@@ -6,12 +6,119 @@
     android:layout_height="match_parent"
     tools:context=".ActivityOrderDescription">
 
-    <TextView
-        android:id="@+id/textView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="ActivityOrderDescription"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="16dp"
+                android:background="@drawable/item_round_corners"
+                android:elevation="8dp"
+                android:orientation="vertical"
+                android:padding="8dp">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:text="Nazwa Branży"
+                    android:textAllCaps="false"
+                    android:textColor="@color/colorPrimaryDarkBlue900"
+                    android:textSize="12sp" />
+
+                <TextView
+                    android:id="@+id/textViewIndustryInOrder"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="32dp"
+                    android:layout_marginEnd="32dp"
+                    android:text="Industry"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginBottom="16dp"/>
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:text="Nazwa Usługi"
+                    android:textAllCaps="false"
+                    android:textColor="@color/colorPrimaryDarkBlue900"
+                    android:textSize="12sp" />
+
+
+                <TextView
+                    android:id="@+id/textViewServiceInOrder"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="32dp"
+                    android:layout_marginEnd="32dp"
+                    android:text="Industry"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginBottom="16dp"/>
+
+
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/linLayCity"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="16dp"
+                android:background="@drawable/item_round_corners"
+                android:elevation="8dp"
+                android:orientation="vertical"
+                android:padding="8dp">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:text="Opisz zlecenie. W opisie powinna się znaleść sugerowana cena i czas wykonania"
+                    android:textAllCaps="false"
+                    android:textColor="@color/colorPrimaryDarkBlue900"
+                    android:textSize="12sp" />
+
+
+                <EditText
+                    android:id="@+id/editTextDescription"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginEnd="8dp"
+                    android:ems="10"
+                    android:hint="Opis zlecenia"
+                    android:inputType="textMultiLine" />
+
+            </LinearLayout>
+
+            <Button
+                android:id="@+id/buttonSendInDescription"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="16dp"
+                android:layout_marginBottom="16dp"
+                android:background="@drawable/button_custom_dark"
+                android:text="Wyślij"
+                android:textColor="@color/colorWhite"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/buttonZapomnialemHasla" />
+
+
+
+
+
+        </LinearLayout>
+
+
+    </ScrollView>
 </androidx.constraintlayout.widget.ConstraintLayout>

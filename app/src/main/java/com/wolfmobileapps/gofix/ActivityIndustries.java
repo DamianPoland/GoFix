@@ -40,7 +40,7 @@ public class ActivityIndustries extends AppCompatActivity {
     private Button buttonGoodCraftsMan;
 
     // lista branż
-    private ArrayList<String> listOfIndustries;
+    private ArrayList<Industries> listOfIndustries;
     private AdapterForIndustries adapterForIndustries;
 
     //shared pred
@@ -78,8 +78,11 @@ public class ActivityIndustries extends AppCompatActivity {
         listViewIndustries.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+
+                // wysłanie z intent ID danego industry
+                Industries currentIndustry = (Industries) listViewIndustries.getItemAtPosition(position);
                 Intent intent = new Intent(ActivityIndustries.this, ActivityServices.class);
-                intent.putExtra("currentIndustry", position);
+                intent.putExtra("currentIndustry", currentIndustry.getId());
                 startActivity(intent);
             }
         });
@@ -113,8 +116,9 @@ public class ActivityIndustries extends AppCompatActivity {
                 for (int i = 0; i < response.length(); i++) {
                     try {
                         JSONObject jsonObject = response.getJSONObject(i);
-                        String name = jsonObject.getString("name");
-                        listOfIndustries.add(name);
+                        int idOfCurrentIndustry = jsonObject.getInt("id");
+                        String nameOfCurrentIndustry = jsonObject.getString("name");
+                        listOfIndustries.add(new Industries(idOfCurrentIndustry,nameOfCurrentIndustry));
                         adapterForIndustries.notifyDataSetChanged();
                     } catch (JSONException e) {
                         e.printStackTrace();
@@ -125,7 +129,7 @@ public class ActivityIndustries extends AppCompatActivity {
             @Override
             public void onErrorResponse(VolleyError error) {
                 // do something when don"t getJSONObject
-                Log.d(TAG, "onErrorResponse: " + error);
+                Log.d(TAG, "getDataFromUrl.onErrorResponse: " + error);
 
             }
         });
@@ -177,4 +181,32 @@ public class ActivityIndustries extends AppCompatActivity {
         return super.onOptionsItemSelected(item);//nie usuwać bo up button nie działa
     }
 
+}
+
+
+class Industries {
+
+    int id;
+    String name;
+
+    public Industries(int id, String name) {
+        this.id = id;
+        this.name = name;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
 }

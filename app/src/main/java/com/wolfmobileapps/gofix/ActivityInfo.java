@@ -36,10 +36,6 @@ public class ActivityInfo extends AppCompatActivity {
         privacy = findViewById(R.id.privacy);
         info = findViewById(R.id.info);
 
-        //ustawienie górnej nazwy i strzałki do powrotu
-        getSupportActionBar().setTitle("Powrót"); //ustawia nazwę na górze
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true); // ustawia strzałkę
-
         //ustavienie zazwy wersji z gradle
         textViewVersionName = findViewById(R.id.textViewVersionName);
         textViewVersionName.setText(BuildConfig.VERSION_NAME);

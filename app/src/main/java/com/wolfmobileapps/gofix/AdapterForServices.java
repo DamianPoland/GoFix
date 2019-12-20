@@ -9,17 +9,18 @@ import android.widget.TextView;
 
 import java.util.List;
 
-public class AdapterForServices extends ArrayAdapter<String> {
+
+public class AdapterForServices extends ArrayAdapter<Services> {
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-        String currentItem = getItem(position);
+        Services currentItem = getItem(position);
         if (convertView==null){
             convertView= LayoutInflater.from(getContext()).inflate(R.layout.layout_for_services,parent,false);
         }
         TextView textServices = convertView.findViewById(R.id.textViewServices);
 
-        textServices.setText(currentItem);
+        textServices.setText(currentItem.getName());
         return convertView;
     }
     public AdapterForServices(Context context, int resource, List objects) {
