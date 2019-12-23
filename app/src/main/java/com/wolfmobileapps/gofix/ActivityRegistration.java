@@ -4,6 +4,7 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
@@ -16,18 +17,24 @@ import android.widget.EditText;
 import android.widget.GridView;
 import android.widget.LinearLayout;
 import android.widget.Spinner;
+import android.widget.Toast;
 
+import com.android.volley.NetworkResponse;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonArrayRequest;
+import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 
 
@@ -76,6 +83,8 @@ public class ActivityRegistration extends AppCompatActivity {
     int regionID;
     int industriesID;
     private ArrayList<Integer> listOfServicesIdToSend;
+    int tokenNumber; // numer wysłany na maila do wpisania w pkę aby potwierdzić eMail
+    int mStatusCode; //Network response np 200 czyli success, a jeśli inny to failure
 
     // JSon Array wszystkich Industries i Services pobrana z API
     private JSONArray jsonArrayOfAllIndustries;
@@ -131,7 +140,6 @@ public class ActivityRegistration extends AppCompatActivity {
         getIndustriesAndSerivesAndPutOnSpinner();
 
 
-
         // button rejestracja
         buttonRegistry.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -183,7 +191,7 @@ public class ActivityRegistration extends AppCompatActivity {
                     return;
                 }
                 // sprawdzenie pola  editTextCity
-                if (!isCraftsman){
+                if (!isCraftsman) {
                     // sprawdzenie czy editTextCity nie jest null
                     if (editTextCity.getText() == null) {
                         showAlertDialog("Wpisz nazwę miasta"); // utworzenie alert Didalog
@@ -215,37 +223,39 @@ public class ActivityRegistration extends AppCompatActivity {
                 }
 
                 // pobranie wszystkich danych
-                boolean craftsmanOfUser = isCraftsman; // jeśli jest true to craftsman a jeśli false to user
-                int region = regionID;
-                String name = editTextName.getText().toString();
-                String eMail = editTextEmail.getText().toString().trim();
-                String city = "";
-                String phoneNumber = "";
+                boolean currentCraftsmanOfUser = isCraftsman; // jeśli jest true to craftsman a jeśli false to user
+                int currentRegion = regionID;
+                String currentName = editTextName.getText().toString();
+                String currentEMail = editTextEmail.getText().toString().trim();
+                String currentPassword = editTextPassword.getText().toString();
+                String currentCity = editTextCity.getText().toString(); // pobranie city potrzebne tylko dla user
+                String currentPhoneNumber = editTextPhoneNumber.getText().toString().trim(); // pobranie phone number potrzebne tylko dla craftsman
+                ArrayList<Integer> servicesIdList = listOfServicesIdToSend; // pobranie listy services ID potrzebne tylko dla craftsman
 
-                int industries = -1; //liczba domyślna która nie istnieje
-                if (!isCraftsman){
-                    city = editTextCity.getText().toString(); // pobranie city jeśli jest user
+                Log.d(TAG, "onClick: All Data: " + "\n craftsmanOfUser:" + currentCraftsmanOfUser + "\n region: " + currentRegion + "\n name: " + currentName + "\n eMail: " + currentEMail + "\n password: " + currentPassword + "\n city: " + currentCity + "\n phoneNumber: " + currentPhoneNumber + "\n servicesIdList: " + servicesIdList);
+
+                // Url api w zależności czy zwykły user czy craftsman
+                String apiUrl = "";
+                Gson gson = new Gson();
+                String currentUserOrCraftsmanString = "";
+                if (currentCraftsmanOfUser) {
+                    apiUrl = C.API + "/api/craftsman/user";
+                    Craftsman currentCraftsman = new Craftsman(currentName, currentEMail, currentPassword, currentRegion, servicesIdList, currentPhoneNumber); // utworzenie obiektu do wysłąnia na serwer
+                    currentUserOrCraftsmanString = gson.toJson(currentCraftsman); // zmiana obiektu na stringa
                 } else {
-                    phoneNumber = editTextPhoneNumber.getText().toString().trim(); // pobranie phone number jeśli jest craftsman
-                    industries = industriesID;
-                    //listOfServicesIdToSend - lista wybranych srvisów do informacji o ogłoszeniach już zrobiona jako główna zmienna
+                    apiUrl = C.API + "client/user";
+                    User currentUser = new User(currentName, currentEMail, currentPassword, currentRegion, currentCity); // utworzenie obiektu do wysłąnia na serwer
+                    currentUserOrCraftsmanString = gson.toJson(currentUser); // zmiana obiektu na stringa
                 }
-                String password = editTextPassword.getText().toString();
-                Log.d(TAG, "onClick: All Data: " + "\n craftsmanOfUser:" + craftsmanOfUser + "\n region: " + region + "\n name: " + name + "\n eMail: " + eMail + "\n city: " + city + "\n phoneNumber: " + phoneNumber + "\n password: " + password + "\n industries: " + industries + "\n listOfServicesIdToSend: " + listOfServicesIdToSend);
 
+                // zmiana instancji obiektu na jsona
+                try {
+                    JSONObject json = new JSONObject(currentUserOrCraftsmanString);
+                    sendRegistrationData(apiUrl, json); // metoda do wysyłanie obiektu na serwer
 
-
-                //TODO
-                // pobranie wszystkich danych i wysłanie na server - API 3
-                // przy odpowiedzi CODE 200 ma się gdzieś zapisać TokenNumber (to nie jest Token końcowy) żeby go potem można było porównać z editTextTokenFromEmail i potem to ma się zrobić:
-                linLayMain.setVisibility(View.GONE);
-                linLayCity.setVisibility(View.GONE);
-                linLayCraftsMan.setVisibility(View.GONE);
-                linLayPassword.setVisibility(View.GONE);
-                buttonRegistry.setVisibility(View.GONE);
-                linLayTokenNumber.setVisibility(View.VISIBLE);
-                buttonLogin.setVisibility(View.VISIBLE);
-
+                } catch (JSONException e) {
+                    Log.d(TAG, "JSONException: " + e);
+                }
             }
         });
 
@@ -264,12 +274,118 @@ public class ActivityRegistration extends AppCompatActivity {
                     return;
                 }
 
-                // TODO
-                // API 3a -wysłanie tokenNumber i w odpowiedzi pobranie z API tokena - zrobić Volley
+                // jeśli pobrany tokez z emaila z editTextTokenFromEmail są takie same to wyśle go na server
+                if (Integer.parseInt(editTextTokenFromEmail.getText().toString()) == tokenNumber) {
+                    String apiUrl = C.API + "user/confirm"; //Url do wysłąnie na server
+                    Gson gson = new Gson();
+                    TokenNumber tokenNumberItem = new TokenNumber(tokenNumber);
+                    String tokenString = gson.toJson(tokenNumberItem);
+                    try {
+                        JSONObject jsonObjectToken = new JSONObject(tokenString);
+                        sendTokenNumber(apiUrl,jsonObjectToken); // metoda wysyłająca na server
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                } else {
+                    showAlertDialog("Token jest nieprawidłowy"); // pokaże jeśli token wpisany w edit Text jest inny niż ten otrzymany z servera
+                }
+            }
+        });
 
-                // zapisanie Tokena pobranego z API do shar
-                //editor.putString(C.KEY_FOR_SHAR_TOKEN, TokenPobrany);
-                //editor.apply();
+
+    }
+    // koniec onCreate----------------------------------------------------------------------
+
+    // wysłąnie rejestracji na serwer
+    public void sendRegistrationData(String Url, JSONObject json) {
+
+        Log.d(TAG, "sendLogin: JSONObject: " + json);
+        Log.d(TAG, "sendLogin: Url: " + Url);
+
+        RequestQueue queue = Volley.newRequestQueue(this);
+        String url = Url; //url
+        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, url, json, new Response.Listener<JSONObject>() {
+            @Override
+            public void onResponse(JSONObject response) {
+
+                Log.d(TAG, "JSONObject response: " + response.toString());
+
+                try {
+                    // zwrot token Number - przy odpowiedzi CODE 200 ma się zapisać TokenNumber (to nie jest Token końcowy) żeby go potem można było porównać z editTextTokenFromEmail
+                    tokenNumber = Integer.parseInt(response.getString("emailVerificationToken"));
+                    Log.d(TAG, "onResponse: succes token: " + tokenNumber);
+
+                    // ustawienie views do wpisania TokenNumber
+                    linLayMain.setVisibility(View.GONE);
+                    linLayCity.setVisibility(View.GONE);
+                    linLayCraftsMan.setVisibility(View.GONE);
+                    linLayPassword.setVisibility(View.GONE);
+                    buttonRegistry.setVisibility(View.GONE);
+                    linLayTokenNumber.setVisibility(View.VISIBLE);
+                    buttonLogin.setVisibility(View.VISIBLE);
+
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+
+                Toast.makeText(ActivityRegistration.this, "Error", Toast.LENGTH_SHORT).show();
+                // do something when error
+                int errorCodeResponse = error.networkResponse.statusCode; // jeśli inny niż 200 to tu się pojawi cod błędu i trzeba go obsłużyć, jeśli 200 to succes i nie włączt wogle metody onErrorResponse
+                Log.d(TAG, "onErrorResponse: resp: " + errorCodeResponse);
+
+                try {
+                    String errorDataResponse = new String(error.networkResponse.data,"UTF-8"); // rozpakowanie do stringa errorDataResponse który jest JSonem lub czymś innym
+                    Log.d(TAG, "onErrorResponse: errorData: " + errorDataResponse);
+
+                    // jeśli kod 422 to zły: email lub region lub phoneNumber - tylko email może być zły wysłąny bo resztę mam w apce sprawdzone
+                    if (errorCodeResponse == 422 ) {
+
+                        // pobranie info z servera o złym emailu i wyświetlenie w alert dialog
+                        JSONObject jsonObject = new JSONObject(errorDataResponse);
+                        JSONObject errorsJsonObject = jsonObject.getJSONObject("errors");
+                        String emailError = errorsJsonObject.getString("email");
+                        Log.d(TAG, "onErrorResponse: emailError: " + emailError);
+                        showAlertDialog(emailError);
+                    }
+                } catch (UnsupportedEncodingException e) {
+                    e.printStackTrace();
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+        queue.add(jsonObjectRequest); //wywołanie klasy
+    }
+
+    // wysłąnie tokenNumber na serwer
+    public void sendTokenNumber(String Url, JSONObject json) {
+
+        Log.d(TAG, "sendLogin: JSONObject: " + json);
+        Log.d(TAG, "sendLogin: Url: " + Url);
+
+        RequestQueue queue = Volley.newRequestQueue(this);
+        String url = Url; //url
+        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.PUT, url, json, new Response.Listener<JSONObject>() {
+            @Override
+            public void onResponse(JSONObject response) {
+
+                Log.d(TAG, "JSONObject response: " + response.toString());
+
+
+
+
+
+                // TODO:
+                // zapisanie tokenu i is_craftsman do shar pref
+//                String token = response.getString("token");
+//                editor.putString(C.KEY_FOR_SHAR_TOKEN, token); // zapisanie da shar tokena
+//                boolean is_craftsman = response.getBoolean("is_craftsman"); // pobranie info czy to zwykły user czy craftsman
+//                editor.putBoolean(C.KEY_FOR_SHAR_IS_CRAFTSMAN, is_craftsman); // zapisanie do shar info czy to zwykły user czy craftsman
+//                editor.apply();
 
                 // otwarcie głównej strony i zamknięcie tej strony
                 //Intent currentIntent = new Intent(ActivityRegistration.this, ActivityIndustries.class);
@@ -279,21 +395,23 @@ public class ActivityRegistration extends AppCompatActivity {
                 // toast o poprawnym logowaniu
                 //Toast.makeText(ActivityLogin.this, "Zalogowano", Toast.LENGTH_SHORT).show();
 
+
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+
+                Toast.makeText(ActivityRegistration.this, "Error", Toast.LENGTH_SHORT).show();
+                // do something when error
+                int errorCodeResponse = error.networkResponse.statusCode; // jeśli inny niż 200 to tu się pojawi cod błędu i trzeba go obsłużyć, jeśli 200 to succes i nie włączt wogle metody onErrorResponse
+                Log.d(TAG, "onErrorResponse: resp: " + errorCodeResponse);
             }
         });
-
-
-
-
-
+        queue.add(jsonObjectRequest); //wywołanie klasy
     }
-    // koniec onCreate----------------------------------------------------------------------
-
-
-
 
     // metoda spinnera do wyboru czy specjalista czy zleceniodawca
-    private void spinerTypeOfUser(){
+    private void spinerTypeOfUser() {
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(ActivityRegistration.this,
                 R.array.array_type_of_user, android.R.layout.simple_list_item_1);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
@@ -302,7 +420,7 @@ public class ActivityRegistration extends AppCompatActivity {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 String text = parent.getItemAtPosition(position).toString();
-                switch (position){		 //ifem też można
+                switch (position) {         //ifem też można
                     case 0:
                         //ustawienie visibility jeśli jest USER
                         linLayCity.setVisibility(View.VISIBLE);
@@ -319,6 +437,7 @@ public class ActivityRegistration extends AppCompatActivity {
                         break;
                 }
             }
+
             @Override
             public void onNothingSelected(AdapterView<?> parent) {
                 //nic nie musi być
@@ -327,7 +446,7 @@ public class ActivityRegistration extends AppCompatActivity {
     }
 
     // pobranie listy województw, dodanie do listy i ustawienie na spinnerze
-    public void getDataRegionsAndPutOnSpinner (String Url) {
+    public void getDataRegionsAndPutOnSpinner(String Url) {
 
         // listy równoległe - jedna ze stringami a druga z ID regions
         listRegionsStrings = new ArrayList<>();
@@ -364,6 +483,7 @@ public class ActivityRegistration extends AppCompatActivity {
                         regionID = listRegionsId.get(position); // pobranie ID z równoległej listy Id Stringów ze spinnera
                         Log.d(TAG, "onItemSelected: regionID: " + regionID);
                     }
+
                     @Override
                     public void onNothingSelected(AdapterView<?> parent) {
                         //nic nie musi być
@@ -382,7 +502,7 @@ public class ActivityRegistration extends AppCompatActivity {
     }
 
     // pobranie danych industries i services z shar i dodanie do spinnera
-    public void getIndustriesAndSerivesAndPutOnSpinner () {
+    public void getIndustriesAndSerivesAndPutOnSpinner() {
         final String industriesAndServices = shar.getString(C.KEY_FOR_SHAR_INDUSTRIES_AND_SERVICES, "");
         if (industriesAndServices != "") {
             try {
@@ -424,7 +544,7 @@ public class ActivityRegistration extends AppCompatActivity {
                             }
 
                             // dodanie services do listy
-                            JSONArray jsonArrayOfCurrentServices =  jsonObjectOfCurrentServices.getJSONArray("services"); // JSONArray servises aktualnie wybraeego ze spinera industry
+                            JSONArray jsonArrayOfCurrentServices = jsonObjectOfCurrentServices.getJSONArray("services"); // JSONArray servises aktualnie wybraeego ze spinera industry
                             for (int i = 0; i < jsonArrayOfCurrentServices.length(); i++) {
                                 JSONObject currentJSONObject = jsonArrayOfCurrentServices.getJSONObject(i);
                                 String currentName = currentJSONObject.getString("name");
@@ -438,7 +558,7 @@ public class ActivityRegistration extends AppCompatActivity {
                             Log.d(TAG, "onItemSelected: listOfCurrentServisesToString size: " + listOfCurrentServisesToString.size());
 
                             // ustawienie listOfCurrentServises w checkBoxach
-                            ArrayAdapter<String> adapretGridView = new ArrayAdapter<String>(ActivityRegistration.this, R.layout.layout_to_grid_checkbox, listOfCurrentServisesToString );
+                            ArrayAdapter<String> adapretGridView = new ArrayAdapter<String>(ActivityRegistration.this, R.layout.layout_to_grid_checkbox, listOfCurrentServisesToString);
                             gridViewServices.setAdapter(adapretGridView);
                             gridViewServices.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                                 @Override
@@ -446,12 +566,12 @@ public class ActivityRegistration extends AppCompatActivity {
 
                                     // zaznaczenie danego checkBoxa i dodanie do listy jego ID
                                     Services currentService = listOfCurrentServises.get(position); // pobranie elementu listOfCurrentServises na podstawie pozycji z listOfCurrentServisesToString
-                                    CheckedTextView currentCheckedTextView =  view.findViewById(R.id.checkedTextView);
-                                    if (currentCheckedTextView.isChecked()){ // jeśli check box jest zaznaczony to odznaczy
+                                    CheckedTextView currentCheckedTextView = view.findViewById(R.id.checkedTextView);
+                                    if (currentCheckedTextView.isChecked()) { // jeśli check box jest zaznaczony to odznaczy
                                         currentCheckedTextView.setChecked(false);
                                         listOfServicesIdToSend.remove(Integer.valueOf(currentService.getId())); // usunięcie z listy wybranego check boxa z service
 
-                                    }else {
+                                    } else {
                                         currentCheckedTextView.setChecked(true); //jeśli check box jest odznaczony to zaznaczy
                                         listOfServicesIdToSend.add(currentService.getId()); // dodanie do listy wybranego check boxa z service
                                     }
@@ -463,6 +583,7 @@ public class ActivityRegistration extends AppCompatActivity {
                             e.printStackTrace();
                         }
                     }
+
                     @Override
                     public void onNothingSelected(AdapterView<?> parent) {
                         //nic nie musi być
@@ -475,7 +596,7 @@ public class ActivityRegistration extends AppCompatActivity {
     }
 
     // utworzenie alert Didalog
-    public void showAlertDialog(String alertMessage){
+    public void showAlertDialog(String alertMessage) {
         AlertDialog.Builder builder = new AlertDialog.Builder(ActivityRegistration.this);
         builder.setTitle("Error");
         builder.setMessage(alertMessage);
@@ -514,5 +635,146 @@ class Regions {
 
     public void setName(String name) {
         this.name = name;
+    }
+}
+
+class User {
+
+    String name;
+    String email;
+    String password;
+    int regionId;
+    String city;
+
+    public User(String name, String email, String password, int regionId, String city) {
+        this.name = name;
+        this.email = email;
+        this.password = password;
+        this.regionId = regionId;
+        this.city = city;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    public int getRegionId() {
+        return regionId;
+    }
+
+    public void setRegionId(int regionId) {
+        this.regionId = regionId;
+    }
+
+    public String getCity() {
+        return city;
+    }
+
+    public void setCity(String city) {
+        this.city = city;
+    }
+}
+
+class Craftsman {
+
+    String name;
+    String email;
+    String password;
+    int regionId;
+    ArrayList<Integer> servicesIdList;
+    String phoneNumber;
+
+    public Craftsman(String name, String email, String password, int regionId, ArrayList<Integer> servicesIdList, String phoneNumber) {
+        this.name = name;
+        this.email = email;
+        this.password = password;
+        this.regionId = regionId;
+        this.servicesIdList = servicesIdList;
+        this.phoneNumber = phoneNumber;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    public int getRegionId() {
+        return regionId;
+    }
+
+    public void setRegionId(int regionId) {
+        this.regionId = regionId;
+    }
+
+    public ArrayList<Integer> getServicesIdList() {
+        return servicesIdList;
+    }
+
+    public void setServicesIdList(ArrayList<Integer> servicesIdList) {
+        this.servicesIdList = servicesIdList;
+    }
+
+    public String getPhoneNumber() {
+        return phoneNumber;
+    }
+
+    public void setPhoneNumber(String phoneNumber) {
+        this.phoneNumber = phoneNumber;
+    }
+}
+
+class TokenNumber {
+
+    int token;
+
+    public TokenNumber(int token) {
+        this.token = token;
+    }
+
+    public int getToken() {
+        return token;
+    }
+
+    public void setToken(int token) {
+        this.token = token;
     }
 }

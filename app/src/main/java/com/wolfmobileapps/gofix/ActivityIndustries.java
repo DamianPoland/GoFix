@@ -15,7 +15,6 @@ import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.ProgressBar;
-import android.widget.Toast;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -37,7 +36,7 @@ public class ActivityIndustries extends AppCompatActivity {
     //views
     private ListView listViewIndustries;
     private ProgressBar progressBarIndustries;
-    private Button buttonGoodCraftsMan;
+    private Button buttonAdvice;
 
     // lista branż
     private ArrayList<Industries> listOfIndustries;
@@ -56,7 +55,7 @@ public class ActivityIndustries extends AppCompatActivity {
         //views
         listViewIndustries = findViewById(R.id.listViewIndustries);
         progressBarIndustries = findViewById(R.id.progressBarIndustries);
-        buttonGoodCraftsMan = findViewById(R.id.buttonGoodCraftsMan);
+        buttonAdvice = findViewById(R.id.buttonGoodCraftsMan);
 
         // shar pref
         shar = getSharedPreferences("sharName", MODE_PRIVATE);
@@ -70,9 +69,17 @@ public class ActivityIndustries extends AppCompatActivity {
         adapterForIndustries = new AdapterForIndustries(this,0,listOfIndustries);
         listViewIndustries.setAdapter(adapterForIndustries);
 
+
+
+
         // tymczasowe czyszczenie tokena w shar pref zeby sie właczało logowanie
 //        editor.putString(C.KEY_FOR_SHAR_TOKEN, "");
 //        editor.apply();
+
+
+
+
+
 
         // list View on Click
         listViewIndustries.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -88,10 +95,10 @@ public class ActivityIndustries extends AppCompatActivity {
         });
 
         // button po czym poznać dobrego fachowca
-        buttonGoodCraftsMan.setOnClickListener(new View.OnClickListener() {
+        buttonAdvice.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //narazie nic nie robi
+                startActivity(new Intent(ActivityIndustries.this, ActivityAdvice.class));
             }
         });
     }
@@ -136,7 +143,7 @@ public class ActivityIndustries extends AppCompatActivity {
         queue.add(jsonArrayRequest); //wywołanie klasy
     }
 
-    // do menu
+    // do górnego menu
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_industries, menu);
@@ -171,16 +178,17 @@ public class ActivityIndustries extends AppCompatActivity {
                     builder.show();
                 }else {
                     // jeśli ktoś jest zalogowany czyli ma zapisany token w shar pref to ominie logowanie i przejdzie dalej
-                    startActivity(new Intent(ActivityIndustries.this, ActivityUserMain.class));
+                    boolean is_craftsman = shar.getBoolean(C.KEY_FOR_SHAR_IS_CRAFTSMAN,false); // pobranie z shar czy jest to zwykły user czy craftsman
+                    if (is_craftsman){
+                        startActivity(new Intent(ActivityIndustries.this, ActivityCraftsmanMain.class));
+                    } else {
+                        startActivity(new Intent(ActivityIndustries.this, ActivityUserMain.class));
+                    }
                 }
-
-
-
                 break;
         }
         return super.onOptionsItemSelected(item);//nie usuwać bo up button nie działa
     }
-
 }
 
 

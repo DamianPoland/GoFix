@@ -12,10 +12,20 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true">
-        <activity android:name=".ActivityInfo"
-            android:parentActivityName=".ActivityIndustries"/>
-        <activity android:name=".ActivityUserMain"
-            android:parentActivityName=".ActivityIndustries"/>
+        <activity android:name=".ActivityUserOffers"></activity>
+        <activity android:name=".ActivityUserHistory" />
+        <activity
+            android:name=".ActivityCraftsmanMain"
+            android:parentActivityName=".ActivityIndustries" />
+        <activity
+            android:name=".ActivityAdvice"
+            android:parentActivityName=".ActivityIndustries" />
+        <activity
+            android:name=".ActivityInfo"
+            android:parentActivityName=".ActivityIndustries" />
+        <activity
+            android:name=".ActivityUserMain"
+            android:parentActivityName=".ActivityIndustries" />
         <activity
             android:name=".ActivityRegistration"
             android:parentActivityName=".ActivityLogin" />

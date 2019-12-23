@@ -13,6 +13,21 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonArrayRequest;
+import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.Volley;
+import com.google.gson.Gson;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.UnsupportedEncodingException;
+
 public class ActivityOrderDescription extends AppCompatActivity {
 
     private static final String TAG = "ActivityOrderDescriptio";
@@ -65,12 +80,12 @@ public class ActivityOrderDescription extends AppCompatActivity {
                 }
                 // sprawdzenie czy editTextDescription nie jest ""
                 if (editTextDescription.getText().toString().trim().equals("")) {
-                    showAlertDialog("Error","Dodaj opis"); // utworzenie alert Didalog
+                    showAlertDialog("Error", "Dodaj opis"); // utworzenie alert Didalog
                     return;
                 }
                 // sprawdzenie czy editTextDescription nie jest < 50
                 if (editTextDescription.getText().toString().length() < 50) {
-                    showAlertDialog("Error","Opis jest za krótki. Nusi być minimum 50 znaków"); // utworzenie alert Didalog
+                    showAlertDialog("Error", "Opis jest za krótki. Nusi być minimum 50 znaków"); // utworzenie alert Didalog
                     return;
                 }
 
@@ -80,27 +95,23 @@ public class ActivityOrderDescription extends AppCompatActivity {
                 String orderText = editTextDescription.getText().toString();
                 Log.d(TAG, "Order: \nindustryIDToSend: " + industryIDToSend + "\nserviceIDToSend: " + serviceIDToSend + "\norderText: " + orderText);
 
-
-
-
-
-
-                // TODO
                 // wysłanie danych do API
-
-                // po udanym wysłaniu
-                showAlertDialog("Potwierdzenie" , "Zlecenie zostało wysłane");
-
-
-
+                String apiUrl = C.API + "client/order";
+                Gson gson = new Gson();
+                Description descriptionItem = new Description(serviceIDToSend, orderText);
+                String descriptionString = gson.toJson(descriptionItem);
+                try {
+                    JSONObject jsonObjectToken = new JSONObject(descriptionString);
+                    sendOrderDescriptiontoSerwer(apiUrl,jsonObjectToken); // metoda wysyłająca na server
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
             }
         });
-
-
     }
 
     // utworzenie alert Didalog
-    public void showAlertDialog(final String titule, String alertMessage){
+    public void showAlertDialog(final String titule, String alertMessage) {
         AlertDialog.Builder builder = new AlertDialog.Builder(ActivityOrderDescription.this);
         builder.setTitle(titule);
         builder.setMessage(alertMessage);
@@ -109,7 +120,7 @@ public class ActivityOrderDescription extends AppCompatActivity {
             public void onClick(DialogInterface dialog, int which) {
 
                 // jeśli będzie to alert wywołany przez wysłąne zlecenie to zamknie okno i przejdzie do początku
-                if (titule.equals("Potwierdzenie")){
+                if (titule.equals("Potwierdzenie")) {
                     startActivity(new Intent(ActivityOrderDescription.this, ActivityIndustries.class));
                     finish();
                 }
@@ -117,5 +128,73 @@ public class ActivityOrderDescription extends AppCompatActivity {
             }
         }).create();
         builder.show();
+    }
+
+    // wysłanie zlecenia na serwer
+    public void sendOrderDescriptiontoSerwer(String Url, JSONObject json) {
+
+        Log.d(TAG, "sendLogin: JSONObject: " + json);
+        Log.d(TAG, "sendLogin: Url: " + Url);
+
+        RequestQueue queue = Volley.newRequestQueue(this);
+        String url = Url; //url
+        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, url, json, new Response.Listener<JSONObject>() {
+            @Override
+            public void onResponse(JSONObject response) {
+
+
+                //TODO:
+
+                Log.d(TAG, "JSONObject response: " + response.toString());
+
+                // po udanym wysłaniu
+                showAlertDialog("Potwierdzenie", "Zlecenie zostało wysłane");
+
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+
+                Toast.makeText(ActivityOrderDescription.this, "Error", Toast.LENGTH_SHORT).show();
+                // do something when error
+                int errorCodeResponse = error.networkResponse.statusCode; // jeśli inny niż 200 to tu się pojawi cod błędu i trzeba go obsłużyć, jeśli 200 to succes i nie włączt wogle metody onErrorResponse
+                Log.d(TAG, "onErrorResponse: resp: " + errorCodeResponse);
+
+                // opis co dokładnie oznacza error
+                try {
+                    String errorDataResponse = new String(error.networkResponse.data,"UTF-8");
+                    Log.d(TAG, "onErrorResponse: errorData: " + errorDataResponse);
+                } catch (UnsupportedEncodingException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+        queue.add(jsonObjectRequest); //wywołanie klasy
+    }
+}
+
+class Description {
+    int serviceId;
+    String description;
+
+    public Description(int serviceId, String description) {
+        this.serviceId = serviceId;
+        this.description = description;
+    }
+
+    public int getServiceId() {
+        return serviceId;
+    }
+
+    public void setServiceId(int serviceId) {
+        this.serviceId = serviceId;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
     }
 }

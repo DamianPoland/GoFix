@@ -6,6 +6,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -120,11 +121,15 @@ public class ActivityLogin extends AppCompatActivity {
             }
         });
 
-        // button zapomniałem hasła
+        // button zapomniałem hasła otwiera http://www.gofix.pl
         buttonZapomnialemHasla.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // do something
+                Uri webpage = Uri.parse("http://www.gofix.pl");
+                Intent intent = new Intent(Intent.ACTION_VIEW, webpage);
+                if (intent.resolveActivity(getPackageManager()) != null) {
+                    startActivity(intent);
+                }
             }
         });
     }
@@ -141,13 +146,18 @@ public class ActivityLogin extends AppCompatActivity {
             @Override
             public void onResponse(JSONObject response) {
 
+                Log.d(TAG, "JSONObject response: " + response.toString());
+
                 try {
 
-                    // zapisanie tokenu do shar pref
+                    // zapisanie tokenu i is_craftsman do shar pref
                     String token = response.getString("token");
-                    editor.putString(C.KEY_FOR_SHAR_TOKEN, token);
+                    editor.putString(C.KEY_FOR_SHAR_TOKEN, token); // zapisanie da shar tokena
+                    boolean is_craftsman = response.getBoolean("is_craftsman"); // pobranie info czy to zwykły user czy craftsman
+                    editor.putBoolean(C.KEY_FOR_SHAR_IS_CRAFTSMAN, is_craftsman); // zapisanie do shar info czy to zwykły user czy craftsman
                     editor.apply();
                     Log.d(TAG, "onResponse token: " + token);
+                    Log.d(TAG, "onResponse is_craftsman: " + is_craftsman);
 
                     //otwarcie nowego activity i zamknięcie tego
                     Intent intent = new Intent(ActivityLogin.this, ActivityIndustries.class);
@@ -164,27 +174,12 @@ public class ActivityLogin extends AppCompatActivity {
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-                // do something when don"t getJSONObject
-                Log.d(TAG, "onErrorResponse: " + error);
-
+                Toast.makeText(ActivityLogin.this, "Error", Toast.LENGTH_SHORT).show();
+                // do something when error
+                int errorCodeResponse = error.networkResponse.statusCode; // jeśli inny niż 200 to tu się pojawi cod błędu i trzeba go obsłużyć, jeśli 200 to succes i nie włączt wogle metody onErrorResponse
+                Log.d(TAG, "onErrorResponse: resp: " + errorCodeResponse);
             }
-        }) {
-            //Network response - jeśili jest inny niż 200 to pokaże error
-            @Override
-            protected Response<JSONObject> parseNetworkResponse(NetworkResponse response) {
-                int mStatusCode = response.statusCode; //Network response np 200 czyli success
-                Log.d(TAG, "parseNetworkResponse: " + mStatusCode);
-                if (mStatusCode != 200) {
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            Toast.makeText(ActivityLogin.this, "Error", Toast.LENGTH_SHORT).show();
-                        }
-                    });
-                }
-                return super.parseNetworkResponse(response);
-            }
-        };
+        });
         queue.add(jsonObjectRequest); //wywołanie klasy
     }
 
