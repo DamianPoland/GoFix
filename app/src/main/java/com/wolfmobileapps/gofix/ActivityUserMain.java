@@ -3,6 +3,7 @@ package com.wolfmobileapps.gofix;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -23,6 +24,8 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 public class ActivityUserMain extends AppCompatActivity {
 
@@ -38,7 +41,9 @@ public class ActivityUserMain extends AppCompatActivity {
     private ArrayList<Order> listOfOrders;
     private AdapterForOrders adapterForOrders;
 
-
+    //shared pred
+    private SharedPreferences shar;
+    private SharedPreferences.Editor editor;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,6 +59,10 @@ public class ActivityUserMain extends AppCompatActivity {
         // action bar
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setTitle("Panel Użytkownika");
+
+        // shar pref
+        shar = getSharedPreferences("sharName", MODE_PRIVATE);
+        editor = shar.edit();
 
         // lista branż + ściągnięcie z neta
         listOfOrders = new ArrayList<>();
@@ -129,7 +138,17 @@ public class ActivityUserMain extends AppCompatActivity {
                 Log.d(TAG, "getDataFromUrl.onErrorResponse: " + error);
 
             }
-        });
+        }) {    //this is the part, that adds the header to the request
+            @Override
+            public Map<String, String> getHeaders() {
+                Map<String, String> params = new HashMap<String, String>();
+                params.put("Content-Type", "application/json"); //  header format wysłanej wiadomości - JSON
+                params.put("Accept", "application/json"); //  header format otrzymanej wiadomości -JSON
+                params.put("Consumer", C.HEDDER_CUSTOMER); //  header Consumer
+                params.put("Authorization", C.HEDDER_BEARER + shar.getString(C.KEY_FOR_SHAR_TOKEN, "")); //  header Authorization
+                return params;
+            }
+        };
         queue.add(jsonArrayRequest); //wywołanie klasy
     }
 }

@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -27,6 +28,8 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.UnsupportedEncodingException;
+import java.util.HashMap;
+import java.util.Map;
 
 public class ActivityOrderDescription extends AppCompatActivity {
 
@@ -42,6 +45,10 @@ public class ActivityOrderDescription extends AppCompatActivity {
     private int industryID;
     private int serviceID;
 
+    //shared pred
+    private SharedPreferences shar;
+    private SharedPreferences.Editor editor;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -56,6 +63,10 @@ public class ActivityOrderDescription extends AppCompatActivity {
         // action bar
         //getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setTitle("Nowe zlecenie");
+
+        // shar pref
+        shar = getSharedPreferences("sharName", MODE_PRIVATE);
+        editor = shar.edit();
 
         // opbranie danych z intent i wstawienie do text Views
         Intent intentFromPreviousActivity = getIntent();
@@ -83,8 +94,8 @@ public class ActivityOrderDescription extends AppCompatActivity {
                     showAlertDialog("Error", "Dodaj opis"); // utworzenie alert Didalog
                     return;
                 }
-                // sprawdzenie czy editTextDescription nie jest < 50
-                if (editTextDescription.getText().toString().length() < 50) {
+                // sprawdzenie czy editTextDescription nie jest < 5
+                if (editTextDescription.getText().toString().length() < 5) {
                     showAlertDialog("Error", "Opis jest za krótki. Nusi być minimum 50 znaków"); // utworzenie alert Didalog
                     return;
                 }
@@ -99,7 +110,7 @@ public class ActivityOrderDescription extends AppCompatActivity {
                 String apiUrl = C.API + "client/order";
                 Gson gson = new Gson();
                 Description descriptionItem = new Description(serviceIDToSend, orderText);
-                String descriptionString = gson.toJson(descriptionItem);
+                String descriptionString = gson.toJson(descriptionItem );
                 try {
                     JSONObject jsonObjectToken = new JSONObject(descriptionString);
                     sendOrderDescriptiontoSerwer(apiUrl,jsonObjectToken); // metoda wysyłająca na server
@@ -142,33 +153,35 @@ public class ActivityOrderDescription extends AppCompatActivity {
             @Override
             public void onResponse(JSONObject response) {
 
-
-                //TODO:
-
-                Log.d(TAG, "JSONObject response: " + response.toString());
-
-                // po udanym wysłaniu
+                // po udanym wysłaniu - zwraca pusty JSON
                 showAlertDialog("Potwierdzenie", "Zlecenie zostało wysłane");
-
+                Log.d(TAG, "JSONObject response: " + response.toString());
             }
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
 
-                Toast.makeText(ActivityOrderDescription.this, "Error", Toast.LENGTH_SHORT).show();
                 // do something when error
                 int errorCodeResponse = error.networkResponse.statusCode; // jeśli inny niż 200 to tu się pojawi cod błędu i trzeba go obsłużyć, jeśli 200 to succes i nie włączt wogle metody onErrorResponse
                 Log.d(TAG, "onErrorResponse: resp: " + errorCodeResponse);
-
-                // opis co dokładnie oznacza error
-                try {
-                    String errorDataResponse = new String(error.networkResponse.data,"UTF-8");
-                    Log.d(TAG, "onErrorResponse: errorData: " + errorDataResponse);
-                } catch (UnsupportedEncodingException e) {
-                    e.printStackTrace();
+                if (errorCodeResponse == 401 ) {
+                    showAlertDialog("Error", "Błąd autoryzacji. Zaloguj się ponownie");
+                }
+                if (errorCodeResponse == 422 ) {
+                    showAlertDialog("Error", "Błąd danych");
                 }
             }
-        });
+        }) {    //this is the part, that adds the header to the request
+            @Override
+            public Map<String, String> getHeaders() {
+                Map<String, String> params = new HashMap<String, String>();
+                params.put("Content-Type", "application/json"); //  header format wysłanej wiadomości - JSON
+                params.put("Accept", "application/json"); //  header format otrzymanej wiadomości -JSON
+                params.put("Consumer", C.HEDDER_CUSTOMER); //  header Consumer
+                params.put("Authorization", C.HEDDER_BEARER + shar.getString(C.KEY_FOR_SHAR_TOKEN, "")); //  header Authorization
+                return params;
+            }
+        };
         queue.add(jsonObjectRequest); //wywołanie klasy
     }
 }

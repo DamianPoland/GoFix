@@ -5,12 +5,17 @@
 
     <item
         android:id="@+id/menu_user"
-        android:title="settings"
+        android:title="user"
         app:showAsAction="ifRoom"
         android:icon="@drawable/ic_person_outline_white_24dp"/>
     <item
+        android:id="@+id/menu_user_logout"
+        android:title="log out"
+        app:showAsAction="ifRoom"
+        android:icon="@drawable/ic_exit_to_app_white_24dp"/>
+    <item
         android:id="@+id/menu_info"
-        android:title="settings"
+        android:title="info"
         app:showAsAction="ifRoom"
         android:icon="@drawable/ic_info_outline_white_24dp"/>
 

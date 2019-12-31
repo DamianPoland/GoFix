@@ -30,6 +30,10 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.UnsupportedEncodingException;
+import java.util.HashMap;
+import java.util.Map;
+
 public class ActivityLogin extends AppCompatActivity {
 
     private static final String TAG = "ActivityLogin";
@@ -134,6 +138,7 @@ public class ActivityLogin extends AppCompatActivity {
         });
     }
 
+
     // wysłąnie loginu i hasła
     public void sendLogin(String Url, JSONObject json) {
 
@@ -159,13 +164,9 @@ public class ActivityLogin extends AppCompatActivity {
                     Log.d(TAG, "onResponse token: " + token);
                     Log.d(TAG, "onResponse is_craftsman: " + is_craftsman);
 
-                    //otwarcie nowego activity i zamknięcie tego
-                    Intent intent = new Intent(ActivityLogin.this, ActivityIndustries.class);
-                    startActivity(intent);
-                    finish();
 
-                    // toast o poprawnym logowaniu
-                    Toast.makeText(ActivityLogin.this, "Zalogowano", Toast.LENGTH_SHORT).show();
+                    // alert o poprawnym logowaniu
+                    showAlertDialog(C.APPROPRIATE_LOGGING);
 
                 } catch (JSONException e) {
                     e.printStackTrace();
@@ -178,27 +179,74 @@ public class ActivityLogin extends AppCompatActivity {
                 // do something when error
                 int errorCodeResponse = error.networkResponse.statusCode; // jeśli inny niż 200 to tu się pojawi cod błędu i trzeba go obsłużyć, jeśli 200 to succes i nie włączt wogle metody onErrorResponse
                 Log.d(TAG, "onErrorResponse: resp: " + errorCodeResponse);
+
+                try {
+                    String errorDataResponse = new String(error.networkResponse.data, "UTF-8"); // rozpakowanie do stringa errorDataResponse który jest JSonem lub czymś innym
+                    Log.d(TAG, "onErrorResponse: errorData: " + errorDataResponse);
+
+                    // pobranie info z servera JSONA z errorem
+                    JSONObject jsonObject = new JSONObject(errorDataResponse);
+                    String messageError = "";
+                    // jeśli kod 422 to zły email
+                    if (errorCodeResponse == 422) {
+                        JSONObject errorsJsonObject = jsonObject.getJSONObject("errors");
+                        messageError = errorsJsonObject.getString("email");
+                        Log.d(TAG, "onErrorResponse: emailError: " + messageError);
+                    }
+
+                    if (errorCodeResponse == 401) {
+                        messageError = jsonObject.getString("message");
+                        Log.d(TAG, "onErrorResponse: messageError: " + messageError);
+                    }
+
+                    // wyświetlenie errora w alert dialog
+                    showAlertDialog(messageError);
+
+                } catch (UnsupportedEncodingException e) {
+                    e.printStackTrace();
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+
+
             }
-        });
+        }) {    //this is the part, that adds the header to the request
+            @Override
+            public Map<String, String> getHeaders() {
+                Map<String, String> params = new HashMap<String, String>();
+                params.put("Content-Type", "application/json"); //  header format wysłanej wiadomości - JSON
+                params.put("Accept", "application/json"); //  header format otrzymanej wiadomości -JSON
+                params.put("Consumer", C.HEDDER_CUSTOMER); //  header Consumer
+                return params;
+            }
+        };
         queue.add(jsonObjectRequest); //wywołanie klasy
     }
 
     // utworzenie alert Didalog
-    public void showAlertDialog(String alertMessage){
+    public void showAlertDialog(final String alertMessage) {
         AlertDialog.Builder builder = new AlertDialog.Builder(ActivityLogin.this);
-        builder.setTitle("Error");
+        String titule = "Error";
+        if (alertMessage.equals(C.APPROPRIATE_LOGGING)) {
+            titule = C.TITULE_LOGGING;
+        }
+        builder.setTitle(titule);
         builder.setMessage(alertMessage);
         builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
 
+                if (alertMessage.equals(C.APPROPRIATE_LOGGING)) {
+                    //otwarcie nowego activity i zamknięcie tego
+                    Intent intent = new Intent(ActivityLogin.this, ActivityIndustries.class);
+                    startActivity(intent);
+                    finish();
+                }
             }
         }).create();
         builder.show();
     }
 }
-
-
 
 
 // klasa do wysłąnia loginu i hasła na serwer ____________________________________________________________________________________

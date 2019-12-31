@@ -15,6 +15,7 @@ import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.ProgressBar;
+import android.widget.Toast;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -28,6 +29,8 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 public class ActivityIndustries extends AppCompatActivity {
 
@@ -66,20 +69,8 @@ public class ActivityIndustries extends AppCompatActivity {
         getDataFromUrl(C.API + "industries");
 
         // ustawienie adaptera
-        adapterForIndustries = new AdapterForIndustries(this,0,listOfIndustries);
+        adapterForIndustries = new AdapterForIndustries(this, 0, listOfIndustries);
         listViewIndustries.setAdapter(adapterForIndustries);
-
-
-
-
-        // tymczasowe czyszczenie tokena w shar pref zeby sie właczało logowanie
-//        editor.putString(C.KEY_FOR_SHAR_TOKEN, "");
-//        editor.apply();
-
-
-
-
-
 
         // list View on Click
         listViewIndustries.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -104,7 +95,7 @@ public class ActivityIndustries extends AppCompatActivity {
     }
 
     // pobranie listy branż i dodanie do Array Adapter
-    public void getDataFromUrl (String Url) {
+    public void getDataFromUrl(String Url) {
 
         RequestQueue queue = Volley.newRequestQueue(this); // utworzenie requst - może być inne np o stringa lub JsonArrray
         String url = Url; //url
@@ -125,7 +116,7 @@ public class ActivityIndustries extends AppCompatActivity {
                         JSONObject jsonObject = response.getJSONObject(i);
                         int idOfCurrentIndustry = jsonObject.getInt("id");
                         String nameOfCurrentIndustry = jsonObject.getString("name");
-                        listOfIndustries.add(new Industries(idOfCurrentIndustry,nameOfCurrentIndustry));
+                        listOfIndustries.add(new Industries(idOfCurrentIndustry, nameOfCurrentIndustry));
                         adapterForIndustries.notifyDataSetChanged();
                     } catch (JSONException e) {
                         e.printStackTrace();
@@ -139,7 +130,17 @@ public class ActivityIndustries extends AppCompatActivity {
                 Log.d(TAG, "getDataFromUrl.onErrorResponse: " + error);
 
             }
-        });
+
+        }) {    //this is the part, that adds the header to the request
+            @Override
+            public Map<String, String> getHeaders() {
+                Map<String, String> params = new HashMap<String, String>();
+                params.put("Content-Type", "application/json"); //  header format wysłanej wiadomości - JSON
+                params.put("Accept", "application/json"); //  header format otrzymanej wiadomości -JSON
+                params.put("Consumer", C.HEDDER_CUSTOMER); //  header Consumer
+                return params;
+            }
+        };
         queue.add(jsonArrayRequest); //wywołanie klasy
     }
 
@@ -149,16 +150,17 @@ public class ActivityIndustries extends AppCompatActivity {
         getMenuInflater().inflate(R.menu.menu_industries, menu);
         return super.onCreateOptionsMenu(menu);
     }
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()){
+        switch (item.getItemId()) {
             case R.id.menu_info:
                 startActivity(new Intent(ActivityIndustries.this, ActivityInfo.class));
                 break;
 
             case R.id.menu_user:
                 // jeśli ktoś jest NIE zalogowany czyli nie ma zapisanego tokenu to odeśle go do strony logowania
-                if (shar.getString(C.KEY_FOR_SHAR_TOKEN, "").equals("")){
+                if (shar.getString(C.KEY_FOR_SHAR_TOKEN, "").equals("")) {
                     AlertDialog.Builder builder = new AlertDialog.Builder(ActivityIndustries.this);
                     builder.setTitle("Logowanie");
                     builder.setMessage("Aby przejść do Panelu Użytkownika musisz być zalogowany");
@@ -176,18 +178,51 @@ public class ActivityIndustries extends AppCompatActivity {
                         }
                     }).create();
                     builder.show();
-                }else {
+                } else {
                     // jeśli ktoś jest zalogowany czyli ma zapisany token w shar pref to ominie logowanie i przejdzie dalej
-                    boolean is_craftsman = shar.getBoolean(C.KEY_FOR_SHAR_IS_CRAFTSMAN,false); // pobranie z shar czy jest to zwykły user czy craftsman
-                    if (is_craftsman){
+                    boolean is_craftsman = shar.getBoolean(C.KEY_FOR_SHAR_IS_CRAFTSMAN, false); // pobranie z shar czy jest to zwykły user czy craftsman
+                    if (is_craftsman) {
                         startActivity(new Intent(ActivityIndustries.this, ActivityCraftsmanMain.class));
                     } else {
                         startActivity(new Intent(ActivityIndustries.this, ActivityUserMain.class));
                     }
                 }
                 break;
+            case R.id.menu_user_logout:
+
+                showAlertDialog("Logout", "Czy chcesz się wylogować?");
+
+
+                break;
         }
         return super.onOptionsItemSelected(item);//nie usuwać bo up button nie działa
+    }
+
+    // utworzenie alert Didalog
+    public void showAlertDialog(String titule, String alertMessage) {
+
+        if (shar.getString(C.KEY_FOR_SHAR_TOKEN, "").equals("")){
+            Toast.makeText(this, "Jesteś wylogowany", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        AlertDialog.Builder builder = new AlertDialog.Builder(ActivityIndustries.this);
+        builder.setTitle(titule);
+        builder.setMessage(alertMessage);
+        builder.setPositiveButton("TAK", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+
+                // czyszczenie tokena w shar pref żeby wylogować
+                editor.putString(C.KEY_FOR_SHAR_TOKEN, "");
+                editor.apply();
+            }
+        }).setNegativeButton("NIE", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+            }
+        }).create();
+
+        builder.show();
     }
 }
 

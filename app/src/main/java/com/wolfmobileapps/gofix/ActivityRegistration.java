@@ -36,6 +36,8 @@ import org.json.JSONObject;
 
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 
 public class ActivityRegistration extends AppCompatActivity {
@@ -239,11 +241,11 @@ public class ActivityRegistration extends AppCompatActivity {
                 Gson gson = new Gson();
                 String currentUserOrCraftsmanString = "";
                 if (currentCraftsmanOfUser) {
-                    apiUrl = C.API + "/api/craftsman/user";
+                    apiUrl = C.API + "user/craftsman";
                     Craftsman currentCraftsman = new Craftsman(currentName, currentEMail, currentPassword, currentRegion, servicesIdList, currentPhoneNumber); // utworzenie obiektu do wysłąnia na serwer
                     currentUserOrCraftsmanString = gson.toJson(currentCraftsman); // zmiana obiektu na stringa
                 } else {
-                    apiUrl = C.API + "client/user";
+                    apiUrl = C.API + "user/client";
                     User currentUser = new User(currentName, currentEMail, currentPassword, currentRegion, currentCity); // utworzenie obiektu do wysłąnia na serwer
                     currentUserOrCraftsmanString = gson.toJson(currentUser); // zmiana obiektu na stringa
                 }
@@ -274,25 +276,20 @@ public class ActivityRegistration extends AppCompatActivity {
                     return;
                 }
 
-                // jeśli pobrany tokez z emaila z editTextTokenFromEmail są takie same to wyśle go na server
-                if (Integer.parseInt(editTextTokenFromEmail.getText().toString()) == tokenNumber) {
-                    String apiUrl = C.API + "user/confirm"; //Url do wysłąnie na server
-                    Gson gson = new Gson();
-                    TokenNumber tokenNumberItem = new TokenNumber(tokenNumber);
-                    String tokenString = gson.toJson(tokenNumberItem);
-                    try {
-                        JSONObject jsonObjectToken = new JSONObject(tokenString);
-                        sendTokenNumber(apiUrl,jsonObjectToken); // metoda wysyłająca na server
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
-                } else {
-                    showAlertDialog("Token jest nieprawidłowy"); // pokaże jeśli token wpisany w edit Text jest inny niż ten otrzymany z servera
+                // tokez wyśle go na server
+                String apiUrl = C.API + "user/confirm"; //Url do wysłąnie na server
+                Gson gson = new Gson();
+                int tokenFromEditText = Integer.parseInt(editTextTokenFromEmail.getText().toString());
+                TokenNumber tokenNumberItem = new TokenNumber(tokenFromEditText);
+                String tokenString = gson.toJson(tokenNumberItem);
+                try {
+                    JSONObject jsonObjectToken = new JSONObject(tokenString);
+                    sendTokenNumber(apiUrl, jsonObjectToken); // metoda wysyłająca na server
+                } catch (JSONException e) {
+                    e.printStackTrace();
                 }
             }
         });
-
-
     }
     // koniec onCreate----------------------------------------------------------------------
 
@@ -311,7 +308,7 @@ public class ActivityRegistration extends AppCompatActivity {
                 Log.d(TAG, "JSONObject response: " + response.toString());
 
                 try {
-                    // zwrot token Number - przy odpowiedzi CODE 200 ma się zapisać TokenNumber (to nie jest Token końcowy) żeby go potem można było porównać z editTextTokenFromEmail
+                    // zwrot token Number - przy odpowiedzi CODE 200 ma się zapisać TokenNumber (to nie jest Token końcowy) tylkko do informacji w logu
                     tokenNumber = Integer.parseInt(response.getString("emailVerificationToken"));
                     Log.d(TAG, "onResponse: succes token: " + tokenNumber);
 
@@ -338,11 +335,11 @@ public class ActivityRegistration extends AppCompatActivity {
                 Log.d(TAG, "onErrorResponse: resp: " + errorCodeResponse);
 
                 try {
-                    String errorDataResponse = new String(error.networkResponse.data,"UTF-8"); // rozpakowanie do stringa errorDataResponse który jest JSonem lub czymś innym
+                    String errorDataResponse = new String(error.networkResponse.data, "UTF-8"); // rozpakowanie do stringa errorDataResponse który jest JSonem lub czymś innym
                     Log.d(TAG, "onErrorResponse: errorData: " + errorDataResponse);
 
                     // jeśli kod 422 to zły: email lub region lub phoneNumber - tylko email może być zły wysłąny bo resztę mam w apce sprawdzone
-                    if (errorCodeResponse == 422 ) {
+                    if (errorCodeResponse == 422) {
 
                         // pobranie info z servera o złym emailu i wyświetlenie w alert dialog
                         JSONObject jsonObject = new JSONObject(errorDataResponse);
@@ -357,7 +354,16 @@ public class ActivityRegistration extends AppCompatActivity {
                     e.printStackTrace();
                 }
             }
-        });
+        }) {    //this is the part, that adds the header to the request
+            @Override
+            public Map<String, String> getHeaders() {
+                Map<String, String> params = new HashMap<String, String>();
+                params.put("Content-Type", "application/json"); //  header format wysłanej wiadomości - JSON
+                params.put("Accept", "application/json"); //  header format otrzymanej wiadomości -JSON
+                params.put("Consumer", C.HEDDER_CUSTOMER); //  header dodatkowy z danymi
+                return params;
+            }
+        };
         queue.add(jsonObjectRequest); //wywołanie klasy
     }
 
@@ -373,29 +379,22 @@ public class ActivityRegistration extends AppCompatActivity {
             @Override
             public void onResponse(JSONObject response) {
 
-                Log.d(TAG, "JSONObject response: " + response.toString());
+                Log.d(TAG, "JSONObject response TOKEN: " + response.toString());
 
+                try {
+                    // zapisanie tokenu i is_craftsman do shar pref
+                    String token = response.getString("token");
+                    editor.putString(C.KEY_FOR_SHAR_TOKEN, token); // zapisanie da shar tokena
+                    boolean is_craftsman = response.getBoolean("is_craftsman"); // pobranie info czy to zwykły user czy craftsman
+                    editor.putBoolean(C.KEY_FOR_SHAR_IS_CRAFTSMAN, is_craftsman); // zapisanie do shar info czy to zwykły user czy craftsman
+                    editor.apply();
 
+                    // alert o poprawnym logowaniu
+                    showAlertDialog(C.APPROPRIATE_LOGGING);
 
-
-
-                // TODO:
-                // zapisanie tokenu i is_craftsman do shar pref
-//                String token = response.getString("token");
-//                editor.putString(C.KEY_FOR_SHAR_TOKEN, token); // zapisanie da shar tokena
-//                boolean is_craftsman = response.getBoolean("is_craftsman"); // pobranie info czy to zwykły user czy craftsman
-//                editor.putBoolean(C.KEY_FOR_SHAR_IS_CRAFTSMAN, is_craftsman); // zapisanie do shar info czy to zwykły user czy craftsman
-//                editor.apply();
-
-                // otwarcie głównej strony i zamknięcie tej strony
-                //Intent currentIntent = new Intent(ActivityRegistration.this, ActivityIndustries.class);
-                //startActivity(currentIntent);
-                //finish();
-
-                // toast o poprawnym logowaniu
-                //Toast.makeText(ActivityLogin.this, "Zalogowano", Toast.LENGTH_SHORT).show();
-
-
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
             }
         }, new Response.ErrorListener() {
             @Override
@@ -405,8 +404,18 @@ public class ActivityRegistration extends AppCompatActivity {
                 // do something when error
                 int errorCodeResponse = error.networkResponse.statusCode; // jeśli inny niż 200 to tu się pojawi cod błędu i trzeba go obsłużyć, jeśli 200 to succes i nie włączt wogle metody onErrorResponse
                 Log.d(TAG, "onErrorResponse: resp: " + errorCodeResponse);
+                showAlertDialog("Nieprawidłowy token");
             }
-        });
+        }) {    //this is the part, that adds the header to the request
+            @Override
+            public Map<String, String> getHeaders() {
+                Map<String, String> params = new HashMap<String, String>();
+                params.put("Content-Type", "application/json"); //  header format wysłanej wiadomości - JSON
+                params.put("Accept", "application/json"); //  header format otrzymanej wiadomości -JSON
+                params.put("Consumer", C.HEDDER_CUSTOMER); //  header dodatkowy z danymi
+                return params;
+            }
+        };
         queue.add(jsonObjectRequest); //wywołanie klasy
     }
 
@@ -497,7 +506,16 @@ public class ActivityRegistration extends AppCompatActivity {
                 Log.d(TAG, "onErrorResponse: " + error);
 
             }
-        });
+        }) {    //this is the part, that adds the header to the request
+            @Override
+            public Map<String, String> getHeaders() {
+                Map<String, String> params = new HashMap<String, String>();
+                params.put("Content-Type", "application/json"); //  header format wysłanej wiadomości - JSON
+                params.put("Accept", "application/json"); //  header format otrzymanej wiadomości -JSON
+                params.put("Consumer", C.HEDDER_CUSTOMER); //  header dodatkowy z danymi
+                return params;
+            }
+        };
         queue.add(jsonArrayRequest); //wywołanie klasy
     }
 
@@ -596,13 +614,24 @@ public class ActivityRegistration extends AppCompatActivity {
     }
 
     // utworzenie alert Didalog
-    public void showAlertDialog(String alertMessage) {
+    public void showAlertDialog(final String alertMessage) {
         AlertDialog.Builder builder = new AlertDialog.Builder(ActivityRegistration.this);
-        builder.setTitle("Error");
+        String titule = "Error";
+        if (alertMessage.equals(C.APPROPRIATE_LOGGING)){
+            titule = C.TITULE_LOGGING;
+        }
+        builder.setTitle(titule);
         builder.setMessage(alertMessage);
         builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
+
+                if (alertMessage.equals(C.APPROPRIATE_LOGGING)){
+                    // otwarcie głównej strony i zamknięcie tej strony
+                    Intent currentIntent = new Intent(ActivityRegistration.this, ActivityIndustries.class);
+                    startActivity(currentIntent);
+                    finish();
+                }
 
             }
         }).create();
