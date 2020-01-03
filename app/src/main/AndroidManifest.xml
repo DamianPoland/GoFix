@@ -12,10 +12,15 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true">
-        <activity android:name=".ActivityUserOffers"></activity>
+        <activity android:name=".ActivityCraftsmanOFFersHistory"></activity>
+        <activity android:name=".ActivityCraftsmanOFFersTaken" />
+        <activity android:name=".ActivityCraftsmanOFFersAll" />
+        <activity android:name=".ActivityCraftsmanData" />
+        <activity android:name=".ActivityCraftsmanOffer" />
+        <activity android:name=".ActivityUserOffers" />
         <activity android:name=".ActivityUserHistory" />
         <activity
-            android:name=".ActivityCraftsmanMain"
+            android:name=".ActivityCraftsmanAllOrders"
             android:parentActivityName=".ActivityIndustries" />
         <activity
             android:name=".ActivityAdvice"

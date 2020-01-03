@@ -57,7 +57,7 @@ public class ActivityServices extends AppCompatActivity {
         //podbranie intent i danych z porzedniego activity
         Intent intent = getIntent();
         positionOfIndustryFromListViewFromIntent = intent.getIntExtra("currentIndustry", 0); // pobranie ID danego Industry z intent
-        String stringJSon = shar.getString(C.KEY_FOR_SHAR_INDUSTRIES_AND_SERVICES, ""); // pobranie stringa z shared pref ze wszystkimi Industries i Services i zamiana na JSonArray
+        String stringJSon = shar.getString(C.KEY_FOR_SHAR_INDUSTRIES_AND_SERVICES, "[]"); // pobranie stringa z shared pref ze wszystkimi Industries i Services i zamiana na JSonArray
         try {
             JSONArray jsonArrayOfAllIndustries = new JSONArray(stringJSon); // JSONArray wszystkiego pobrana ze stringa
 
@@ -116,7 +116,20 @@ public class ActivityServices extends AppCompatActivity {
                     }).create();
                     builder.show();
 
-                } else {
+                } else if (shar.getBoolean(C.KEY_FOR_SHAR_IS_CRAFTSMAN, false)){
+
+                    // jeśli jest to craftsman to nie może dodać zlecenia
+                    AlertDialog.Builder builder = new AlertDialog.Builder(ActivityServices.this);
+                    builder.setTitle("Informacja");
+                    builder.setMessage("Jesteś wykonawcą i nie możasz dodawać zleceń - przejdż do panelu użytkownika na stronie głównej");
+                    builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                        }
+                    }).create();
+                    builder.show();
+
+                } else{
 
                     // jeśli ktoś jest zalogowany czyli ma zapisany token w shar pref to ominie logowanie i przejdzie dalej
                     Intent intentToOrderDescription = new Intent(ActivityServices.this, ActivityOrderDescription.class);

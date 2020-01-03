@@ -8,6 +8,9 @@ public class C {
     // key do shar pref gdzie jest zapisane pierwsze API czyli wszystkie branże i podbranże
     public static final String KEY_FOR_SHAR_INDUSTRIES_AND_SERVICES = "key for shar industries and services";
 
+    // key do shar pref gdzie jest zapisane regions
+    public static final String KEY_FOR_SHAR_REGIONS = "key for shar REGIONS";
+
     // key do shar gdzie jest zapisany login
     public static final String KEY_FOR_SHAR_TOKEN = "key for shar TOKEN";
     public static final String KEY_FOR_SHAR_IS_CRAFTSMAN = "key for shar IS CRAFTSMAN";

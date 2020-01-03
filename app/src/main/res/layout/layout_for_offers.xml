@@ -2,6 +2,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical" android:layout_width="match_parent"
     android:layout_height="match_parent">
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -14,7 +15,16 @@
         android:orientation="vertical">
 
         <TextView
-            android:id="@+id/textViewOrderIndustryAndService"
+            android:id="@+id/textViewOrderRegionAndCity"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="8dp"
+            android:text="order"
+            android:textColor="@android:color/black"
+            android:textSize="16sp" />
+
+        <TextView
+            android:id="@+id/textViewOrderIndustryAndServiceCraftsman"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:padding="8dp"
@@ -24,7 +34,7 @@
 
 
         <TextView
-            android:id="@+id/textViewOrderDescription"
+            android:id="@+id/textViewOrderDescriptionCraftsman"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:padding="8dp"
@@ -33,7 +43,7 @@
             android:textSize="16sp" />
 
         <TextView
-            android:id="@+id/textViewOrder_offer_picked_at"
+            android:id="@+id/textViewOrder_offer_picked_atCraftsman"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:padding="8dp"
@@ -42,7 +52,7 @@
             android:textSize="16sp" />
 
         <TextView
-            android:id="@+id/textViewOrder_closed_at"
+            android:id="@+id/textViewOrder_closed_atCraftsman"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:padding="8dp"

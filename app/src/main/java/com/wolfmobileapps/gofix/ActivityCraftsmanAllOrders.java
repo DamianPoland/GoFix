@@ -1,15 +1,15 @@
 package com.wolfmobileapps.gofix;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
-import android.accounts.Account;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -21,30 +21,26 @@ import com.android.volley.toolbox.JsonArrayRequest;
 import com.android.volley.toolbox.Volley;
 
 import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
-public class ActivityUserMain extends AppCompatActivity {
+public class ActivityCraftsmanAllOrders extends AppCompatActivity {
 
-    private static final String TAG = "ActivityUserMain";
+    private static final String TAG = "CraftsmanAllOrders";
 
     //views
-    TextView textViewOrders;
-    TextView textViewNoOrders;
-    Button buttonOrdersHistory;
-    ListView listViewOrders;
-
-    // lista zleceń
-    private ArrayList<Order> listOfOrders;
-    private AdapterForOrders adapterForOrders;
+    TextView textViewNoOrdersCraftsman;
+    ListView listViewOfOrdersCraftsman;
 
     //shared pred
     private SharedPreferences shar;
     private SharedPreferences.Editor editor;
+
+    // lista zleceń
+    private ArrayList<Order> listOfCraftsmanOrders;
+    private AdapterForCraftsmanOrders adapterForCraftsmanOrders;
 
     // list Serwices
     private ArrayList<ServicesAndIndustryName> listOfIndustriesAndServicesAcoordingToServiceID = new ArrayList<>();
@@ -52,13 +48,11 @@ public class ActivityUserMain extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_user_main);
+        setContentView(R.layout.activity_craftsman_all_orders);
 
         //views
-        textViewOrders = findViewById(R.id.textViewOrders);
-        textViewNoOrders = findViewById(R.id.textViewNoOrders);
-        buttonOrdersHistory = findViewById(R.id.buttonOrdersHistory);
-        listViewOrders = findViewById(R.id.listViewOrders);
+        textViewNoOrdersCraftsman = findViewById(R.id.textViewNoOrdersCraftsman);
+        listViewOfOrdersCraftsman = findViewById(R.id.listViewOfOrdersCraftsman);
 
         // action bar
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -68,59 +62,67 @@ public class ActivityUserMain extends AppCompatActivity {
         shar = getSharedPreferences("sharName", MODE_PRIVATE);
         editor = shar.edit();
 
-        // lista branż + ściągnięcie z neta
-        listOfOrders = new ArrayList<>();
-        getDataFromUrl(C.API + "client/orders");
+        // lista Orders + ściągnięcie z neta
+        listOfCraftsmanOrders = new ArrayList<>();
+        getDataFromUrl();
 
         // ustawienie adaptera
-        adapterForOrders = new AdapterForOrders(this,0,listOfOrders);
-        listViewOrders.setAdapter(adapterForOrders);
+        adapterForCraftsmanOrders = new AdapterForCraftsmanOrders(this,0, listOfCraftsmanOrders);
+        listViewOfOrdersCraftsman.setAdapter(adapterForCraftsmanOrders);
 
         //podbranie nazwy Industry, industryID, nazwy Service i serviceID i zapisanie do array listOfIndustriesAndServicesAcoordingToServiceID
         Order order = new Order(this);
         listOfIndustriesAndServicesAcoordingToServiceID.addAll(order.putIndustriesAndServicesWithIDToArray ());
 
-        // button do zleceń zamkniętych
-        buttonOrdersHistory.setOnClickListener(new View.OnClickListener() {
+        //list view z ofertami, onClick jeśli ma być wysłąna oferta do danego Order
+        listViewOfOrdersCraftsman.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
-            public void onClick(View v) {
-                startActivity(new Intent(ActivityUserMain.this, ActivityUserHistory.class));
+            public void onItemClick(AdapterView<?> parent, View view, final int position, long id) {
+                AlertDialog.Builder builder = new AlertDialog.Builder(ActivityCraftsmanAllOrders.this);
+                builder.setTitle("Oferta");
+                builder.setMessage("Czy chcesz wysłać ofertę do tego zlecenia?");
+                builder.setPositiveButton("TAK", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        Intent currentIntent = new Intent(ActivityCraftsmanAllOrders.this, ActivityCraftsmanOffer.class);
+                        Order currentOrder = (Order) listViewOfOrdersCraftsman.getItemAtPosition(position);
+                        int orderId = currentOrder.getId();
+                        int craftsmanId = currentOrder.getCraftsman_id();
+                        currentIntent.putExtra("orderId", orderId);
+                        currentIntent.putExtra("craftsmanId", craftsmanId);
+                        startActivity(currentIntent);
+                        finish();
+                    }
+                }).setNegativeButton("NIE", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        // do something when click cancel
+                    }
+                }).create();
+                builder.show();
             }
         });
 
-        //list view z ofertami
-        listViewOrders.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Intent listIntent = new Intent(ActivityUserMain.this, ActivityUserOffers.class);
-
-                //TODO order ID trzeba przypisać
-                int orderID = 1; // order ID trzeba przypisać
-                listIntent.putExtra(C.KEY_FOR_INTENT_TO_ORDER_ID, 1);
-                startActivity(listIntent);
-            }
-        });
     }
 
     // pobranie listy zleceń i dodanie do listView
-    public void getDataFromUrl (String Url) {
-
-        Log.d(TAG, "sendLogin: Url: " + Url);
+    public void getDataFromUrl () {
 
         RequestQueue queue = Volley.newRequestQueue(this); // utworzenie requst - może być inne np o stringa lub JsonArrray
-        String url = Url; //url
+        String url = C.API + "craftsman/orders/open"; //url
+        Log.d(TAG, "sendLogin: url: " + url);
         JsonArrayRequest jsonArrayRequest = new JsonArrayRequest(Request.Method.GET, url, null, new Response.Listener<JSONArray>() {
             @Override
             public void onResponse(JSONArray response) {
 
                 // ukrycie textViewNoOrders
-                textViewNoOrders.setVisibility(View.INVISIBLE);
+                textViewNoOrdersCraftsman.setVisibility(View.INVISIBLE);
                 Log.d(TAG, "onResponse: response: " + response);
 
                 // dodanie listy Orders z response
-                Order order = new Order(ActivityUserMain.this);
-                listOfOrders.addAll(order.putOrdersToArrayList(response, listOfIndustriesAndServicesAcoordingToServiceID));
-                adapterForOrders.notifyDataSetChanged();
+                Order order = new Order(ActivityCraftsmanAllOrders.this);
+                listOfCraftsmanOrders.addAll(order.putOrdersToArrayList(response, listOfIndustriesAndServicesAcoordingToServiceID));
+                adapterForCraftsmanOrders.notifyDataSetChanged();
             }
         }, new Response.ErrorListener() {
             @Override
@@ -143,4 +145,3 @@ public class ActivityUserMain extends AppCompatActivity {
         queue.add(jsonArrayRequest); //wywołanie klasy
     }
 }
-

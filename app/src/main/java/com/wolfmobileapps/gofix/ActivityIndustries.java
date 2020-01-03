@@ -64,6 +64,9 @@ public class ActivityIndustries extends AppCompatActivity {
         shar = getSharedPreferences("sharName", MODE_PRIVATE);
         editor = shar.edit();
 
+        // pobranie regionów i zapisanie do shar
+        getDataRegionsAndPutToShar();
+
         // lista branż + ściągnięcie z neta
         listOfIndustries = new ArrayList<>();
         getDataFromUrl(C.API + "industries");
@@ -109,6 +112,7 @@ public class ActivityIndustries extends AppCompatActivity {
                 // dodanie danych z Url do shar pref
                 editor.putString(C.KEY_FOR_SHAR_INDUSTRIES_AND_SERVICES, response.toString());
                 editor.apply();
+                Log.d(TAG, "onResponse: response.toString(): " +response.toString());
 
                 // pobranie JSonArray i zapisanie do listOfIndustries
                 for (int i = 0; i < response.length(); i++) {
@@ -138,6 +142,41 @@ public class ActivityIndustries extends AppCompatActivity {
                 params.put("Content-Type", "application/json"); //  header format wysłanej wiadomości - JSON
                 params.put("Accept", "application/json"); //  header format otrzymanej wiadomości -JSON
                 params.put("Consumer", C.HEDDER_CUSTOMER); //  header Consumer
+                return params;
+            }
+        };
+        queue.add(jsonArrayRequest); //wywołanie klasy
+    }
+
+    // pobranie listy województw i dodanie do shar
+    public void getDataRegionsAndPutToShar() {
+
+        RequestQueue queue = Volley.newRequestQueue(ActivityIndustries.this); // utworzenie requst - może być inne np o stringa lub JsonArrray
+        String url = C.API + "regions"; //url
+        JsonArrayRequest jsonArrayRequest = new JsonArrayRequest(Request.Method.GET, url, null, new Response.Listener<JSONArray>() {
+            @Override
+            public void onResponse(JSONArray response) {
+
+                // dodanie danych listRegions z Url do shar pref
+                editor.putString(C.KEY_FOR_SHAR_REGIONS, response.toString());
+                editor.apply();
+                Log.d(TAG, "onResponse: response.toString(): " +response.toString());
+
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                // do something when don"t getJSONObject
+                Log.d(TAG, "onErrorResponse: getDataRegionsAndPutToShar: " + error);
+
+            }
+        }) {    //this is the part, that adds the header to the request
+            @Override
+            public Map<String, String> getHeaders() {
+                Map<String, String> params = new HashMap<String, String>();
+                params.put("Content-Type", "application/json"); //  header format wysłanej wiadomości - JSON
+                params.put("Accept", "application/json"); //  header format otrzymanej wiadomości -JSON
+                params.put("Consumer", C.HEDDER_CUSTOMER); //  header dodatkowy z danymi
                 return params;
             }
         };
@@ -182,7 +221,7 @@ public class ActivityIndustries extends AppCompatActivity {
                     // jeśli ktoś jest zalogowany czyli ma zapisany token w shar pref to ominie logowanie i przejdzie dalej
                     boolean is_craftsman = shar.getBoolean(C.KEY_FOR_SHAR_IS_CRAFTSMAN, false); // pobranie z shar czy jest to zwykły user czy craftsman
                     if (is_craftsman) {
-                        startActivity(new Intent(ActivityIndustries.this, ActivityCraftsmanMain.class));
+                        startActivity(new Intent(ActivityIndustries.this, ActivityCraftsmanData.class));
                     } else {
                         startActivity(new Intent(ActivityIndustries.this, ActivityUserMain.class));
                     }

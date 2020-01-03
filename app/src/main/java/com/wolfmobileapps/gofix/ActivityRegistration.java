@@ -129,7 +129,7 @@ public class ActivityRegistration extends AppCompatActivity {
         spinerTypeOfUser();
 
         // metoda spinnera do wyboru województwa
-        getDataRegionsAndPutOnSpinner(C.API + "regions");
+        getDataRegionsAndPutOnSpinner();
 
         // instancja różnych list
         listOfIndustriesString = new ArrayList<>(); // lista Stringów do wyświetlania w spinnerze
@@ -455,68 +455,45 @@ public class ActivityRegistration extends AppCompatActivity {
     }
 
     // pobranie listy województw, dodanie do listy i ustawienie na spinnerze
-    public void getDataRegionsAndPutOnSpinner(String Url) {
+    public void getDataRegionsAndPutOnSpinner() {
 
         // listy równoległe - jedna ze stringami a druga z ID regions
         listRegionsStrings = new ArrayList<>();
         listRegionsId = new ArrayList<>();
 
-        RequestQueue queue = Volley.newRequestQueue(this); // utworzenie requst - może być inne np o stringa lub JsonArrray
-        String url = Url; //url
-        JsonArrayRequest jsonArrayRequest = new JsonArrayRequest(Request.Method.GET, url, null, new Response.Listener<JSONArray>() {
-            @Override
-            public void onResponse(JSONArray response) {
+        // pobranie listy województw z shar i zapisanie jej do listRegionsStrings
+        String stringJSon = shar.getString(C.KEY_FOR_SHAR_REGIONS, "[]");
 
-                // pobranie listy województw z API i zapisanie jej do listRegionsStrings
-                for (int i = 0; i < response.length(); i++) {
-                    try {
-                        JSONObject jsonObject = response.getJSONObject(i);
-                        String name = jsonObject.getString("name");
-                        int id = jsonObject.getInt("id");
-                        listRegionsStrings.add(name); // lista Stringów do wyświetlania w spinnerze
-                        listRegionsId.add(id); // równoległa lista Id Stringów ze spinnera
-
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
-                }
-
-                // ustawienie listRegionsStrings na spinnerRegions
-                spinnerArrayAdapterRegions = new ArrayAdapter<>(ActivityRegistration.this, android.R.layout.simple_list_item_1, listRegionsStrings);
-                spinnerRegions.setAdapter(spinnerArrayAdapterRegions);
-                spinnerRegions.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-                    @Override
-                    public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-
-                        // zapisanie do regionID żeby potem wysłać na server
-                        regionID = listRegionsId.get(position); // pobranie ID z równoległej listy Id Stringów ze spinnera
-                        Log.d(TAG, "onItemSelected: regionID: " + regionID);
-                    }
-
-                    @Override
-                    public void onNothingSelected(AdapterView<?> parent) {
-                        //nic nie musi być
-                    }
-                });
+        try {
+            JSONArray jsonArrayRegions = new JSONArray(stringJSon); // JSONArray wszystkiego pobrana ze stringa
+            for (int i = 0; i < jsonArrayRegions.length(); i++) {
+                JSONObject jsonObject = jsonArrayRegions.getJSONObject(i);
+                String name = jsonObject.getString("name");
+                int id = jsonObject.getInt("id");
+                listRegionsStrings.add(name); // lista Stringów do wyświetlania w spinnerze
+                listRegionsId.add(id); // równoległa lista Id Stringów ze spinnera
             }
-        }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                // do something when don"t getJSONObject
-                Log.d(TAG, "onErrorResponse: " + error);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
 
-            }
-        }) {    //this is the part, that adds the header to the request
+        // ustawienie listRegionsStrings na spinnerRegions
+        spinnerArrayAdapterRegions = new ArrayAdapter<>(ActivityRegistration.this, android.R.layout.simple_list_item_1, listRegionsStrings);
+        spinnerRegions.setAdapter(spinnerArrayAdapterRegions);
+        spinnerRegions.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
-            public Map<String, String> getHeaders() {
-                Map<String, String> params = new HashMap<String, String>();
-                params.put("Content-Type", "application/json"); //  header format wysłanej wiadomości - JSON
-                params.put("Accept", "application/json"); //  header format otrzymanej wiadomości -JSON
-                params.put("Consumer", C.HEDDER_CUSTOMER); //  header dodatkowy z danymi
-                return params;
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+
+                // zapisanie do regionID żeby potem wysłać na server
+                regionID = listRegionsId.get(position); // pobranie ID z równoległej listy Id Stringów ze spinnera
+                Log.d(TAG, "onItemSelected: regionID: " + regionID);
             }
-        };
-        queue.add(jsonArrayRequest); //wywołanie klasy
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+                //nic nie musi być
+            }
+        });
     }
 
     // pobranie danych industries i services z shar i dodanie do spinnera
