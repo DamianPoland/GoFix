@@ -37,7 +37,7 @@ public class ActivityCraftsmanOFFersAll extends AppCompatActivity {
     private SharedPreferences.Editor editor;
 
     // lista zleceń
-    private ArrayList<CraftsmanOFFer> listOfCraftsmanOFFersAll;
+    private ArrayList<CraftsmanOffersAll> listOfCraftsmanOFFersAll;
     private AdapterForCraftsmanOFFersAll adapterForCraftsmanOFFersAll;
 
     @Override
@@ -76,22 +76,22 @@ public class ActivityCraftsmanOFFersAll extends AppCompatActivity {
                 textViewCraftsmanOFFersAllNo.setVisibility(View.INVISIBLE);
                 Log.d(TAG, "onResponse: response: " + response);
 
-                //TODO oferty powrzucać do array adptera i pokazać w list view
-
                 // pobranie JSonArray i zapisanie do listOfOrders
                 for (int i = 0; i < response.length(); i++) {
                     try {
 
                         // pobranie danych z JSONA i zapisanie do listy listOfCraftsmanOFFersAll
                         JSONObject jsonObject = response.getJSONObject(i);
-                        int id = jsonObject.getInt("id");
-                        int craftsman_id = jsonObject.getInt("craftsman_id");
+                        int id = jsonObject.getInt("id"); // id zlecenia
                         int order_id = jsonObject.getInt("order_id");
                         String details = jsonObject.getString("details");
                         String price = jsonObject.getString("price");
-                        Log.d(TAG, "onResponse: \nid: " + id + "\ncraftsman_id: "+ craftsman_id + "\norder_id: " + order_id + "\ndetails: " + details + "\nprice: " + price);
-                        CraftsmanOFFer craftsmanOFFer = new CraftsmanOFFer(id, craftsman_id, order_id, details, price);
-                        listOfCraftsmanOFFersAll.add(craftsmanOFFer);
+                        String city = jsonObject.getString("city");
+                        String client_name = jsonObject.getString("client_name");
+
+                        Log.d(TAG, "onResponse: \nid: " + id + "\norder_id: " + order_id + "\ndetails: " + details + "\nprice: " + price + "\ncity: " + city + "\nclient_name: " + client_name);
+                        CraftsmanOffersAll craftsmanOffersAll = new CraftsmanOffersAll(id, order_id, details, price, city, client_name);
+                        listOfCraftsmanOFFersAll.add(craftsmanOffersAll);
                         adapterForCraftsmanOFFersAll.notifyDataSetChanged();
                     } catch (JSONException e) {
                         e.printStackTrace();
@@ -101,8 +101,8 @@ public class ActivityCraftsmanOFFersAll extends AppCompatActivity {
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-                // do something when don"t getJSONObject
                 Log.d(TAG, "getDataFromUrl.onErrorResponse: " + error);
+                // jeśli jest response: com.android.volley.ParseError: org.json.JSONException: Value [] of type org.json.JSONArray cannot be converted to JSONObject - to znaczy że nie ma zleceń w tym województwie(regionie)
 
             }
         }) {    //this is the part, that adds the header to the request
@@ -120,20 +120,22 @@ public class ActivityCraftsmanOFFersAll extends AppCompatActivity {
     }
 }
 
-class CraftsmanOFFer {
+class CraftsmanOffersAll {
 
     private int id;
-    private int craftsman_id;
     private int order_id;
     private String details;
     private String price;
+    private String city;
+    private String client_name;
 
-    public CraftsmanOFFer(int id, int craftsman_id, int order_id, String details, String price) {
+    public CraftsmanOffersAll(int id, int order_id, String details, String price, String city, String client_name) {
         this.id = id;
-        this.craftsman_id = craftsman_id;
         this.order_id = order_id;
         this.details = details;
         this.price = price;
+        this.city = city;
+        this.client_name = client_name;
     }
 
     public int getId() {
@@ -142,14 +144,6 @@ class CraftsmanOFFer {
 
     public void setId(int id) {
         this.id = id;
-    }
-
-    public int getCraftsman_id() {
-        return craftsman_id;
-    }
-
-    public void setCraftsman_id(int craftsman_id) {
-        this.craftsman_id = craftsman_id;
     }
 
     public int getOrder_id() {
@@ -174,5 +168,21 @@ class CraftsmanOFFer {
 
     public void setPrice(String price) {
         this.price = price;
+    }
+
+    public String getCity() {
+        return city;
+    }
+
+    public void setCity(String city) {
+        this.city = city;
+    }
+
+    public String getClient_name() {
+        return client_name;
+    }
+
+    public void setClient_name(String client_name) {
+        this.client_name = client_name;
     }
 }

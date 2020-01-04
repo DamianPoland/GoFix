@@ -17,10 +17,10 @@ import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
-import com.android.volley.toolbox.JsonArrayRequest;
+import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 
-import org.json.JSONArray;
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -39,7 +39,7 @@ public class ActivityCraftsmanAllOrders extends AppCompatActivity {
     private SharedPreferences.Editor editor;
 
     // lista zleceń
-    private ArrayList<Order> listOfCraftsmanOrders;
+    private ArrayList<OrderCraftsman> listOfCraftsmanOrders;
     private AdapterForCraftsmanOrders adapterForCraftsmanOrders;
 
     // list Serwices
@@ -54,10 +54,6 @@ public class ActivityCraftsmanAllOrders extends AppCompatActivity {
         textViewNoOrdersCraftsman = findViewById(R.id.textViewNoOrdersCraftsman);
         listViewOfOrdersCraftsman = findViewById(R.id.listViewOfOrdersCraftsman);
 
-        // action bar
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        getSupportActionBar().setTitle("Panel Użytkownika");
-
         // shar pref
         shar = getSharedPreferences("sharName", MODE_PRIVATE);
         editor = shar.edit();
@@ -71,10 +67,10 @@ public class ActivityCraftsmanAllOrders extends AppCompatActivity {
         listViewOfOrdersCraftsman.setAdapter(adapterForCraftsmanOrders);
 
         //podbranie nazwy Industry, industryID, nazwy Service i serviceID i zapisanie do array listOfIndustriesAndServicesAcoordingToServiceID
-        Order order = new Order(this);
+        OrderCraftsman order = new OrderCraftsman(this);
         listOfIndustriesAndServicesAcoordingToServiceID.addAll(order.putIndustriesAndServicesWithIDToArray ());
 
-        //list view z ofertami, onClick jeśli ma być wysłąna oferta do danego Order
+        //list view z ofertami, onClick jeśli ma być wysłąna oferta do danego OrderCraftsman
         listViewOfOrdersCraftsman.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, final int position, long id) {
@@ -84,12 +80,10 @@ public class ActivityCraftsmanAllOrders extends AppCompatActivity {
                 builder.setPositiveButton("TAK", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        Intent currentIntent = new Intent(ActivityCraftsmanAllOrders.this, ActivityCraftsmanOffer.class);
-                        Order currentOrder = (Order) listViewOfOrdersCraftsman.getItemAtPosition(position);
+                        Intent currentIntent = new Intent(ActivityCraftsmanAllOrders.this, ActivityCraftsmanOfferToSend.class);
+                        OrderCraftsman currentOrder = (OrderCraftsman) listViewOfOrdersCraftsman.getItemAtPosition(position);
                         int orderId = currentOrder.getId();
-                        int craftsmanId = currentOrder.getCraftsman_id();
                         currentIntent.putExtra("orderId", orderId);
-                        currentIntent.putExtra("craftsmanId", craftsmanId);
                         startActivity(currentIntent);
                         finish();
                     }
@@ -111,16 +105,16 @@ public class ActivityCraftsmanAllOrders extends AppCompatActivity {
         RequestQueue queue = Volley.newRequestQueue(this); // utworzenie requst - może być inne np o stringa lub JsonArrray
         String url = C.API + "craftsman/orders/open"; //url
         Log.d(TAG, "sendLogin: url: " + url);
-        JsonArrayRequest jsonArrayRequest = new JsonArrayRequest(Request.Method.GET, url, null, new Response.Listener<JSONArray>() {
+        JsonObjectRequest jsonArrayRequest = new JsonObjectRequest(Request.Method.GET, url, null, new Response.Listener<JSONObject>() {
             @Override
-            public void onResponse(JSONArray response) {
+            public void onResponse(JSONObject response) {
 
                 // ukrycie textViewNoOrders
                 textViewNoOrdersCraftsman.setVisibility(View.INVISIBLE);
                 Log.d(TAG, "onResponse: response: " + response);
 
                 // dodanie listy Orders z response
-                Order order = new Order(ActivityCraftsmanAllOrders.this);
+                OrderCraftsman order = new OrderCraftsman(ActivityCraftsmanAllOrders.this);
                 listOfCraftsmanOrders.addAll(order.putOrdersToArrayList(response, listOfIndustriesAndServicesAcoordingToServiceID));
                 adapterForCraftsmanOrders.notifyDataSetChanged();
             }

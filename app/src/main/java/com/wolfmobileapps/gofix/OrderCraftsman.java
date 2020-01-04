@@ -3,86 +3,67 @@ package com.wolfmobileapps.gofix;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.util.Log;
-import android.view.View;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
-
-import com.android.volley.Request;
-import com.android.volley.RequestQueue;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
-import com.android.volley.toolbox.JsonArrayRequest;
-import com.android.volley.toolbox.Volley;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
 
 import static android.content.Context.MODE_PRIVATE;
 
-public class Order {
 
-    private static final String TAG = "Order";
+
+
+//_______________________________________________________________________________________________________________________________________________________________________________________
+
+
+public class OrderCraftsman {
+
+    private static final String TAG = "OrderCraftsman";
 
     private Context context;
 
-    public Order(Context context) {
+    public OrderCraftsman(Context context) {
         this.context = context;
     }
 
-    // dane do stworzenia obiektu klasy Order
+    // dane do stworzenia obiektu klasy OrderCraftsman
     private int id;
-    private int client_id;
     private int region_id;
-    private int craftsman_id;
     private int service_id;
     private String description;
-    private String offer_picked_at;
-    private String closed_at;
+    private String city;
     private String serviceName;
     private String industryName;
-    private String city;
     private String region_name;
 
     //shared pred
     private SharedPreferences shar;
     private SharedPreferences.Editor editor;
 
-    // zmina JSONArray response pobranego z neta na liste Orders
-    public ArrayList putOrdersToArrayList(JSONArray response, ArrayList<ServicesAndIndustryName> listOfIndustriesAndServicesAcoordingToServiceID) {
+    // zmina JSONObject response pobranego z neta na liste Orders
+    public ArrayList putOrdersToArrayList(JSONObject response, ArrayList<ServicesAndIndustryName> listOfIndustriesAndServicesAcoordingToServiceID) {
 
         // shar pref
         shar = context.getSharedPreferences("sharName", MODE_PRIVATE);
 
         // lista Orders która jest zwracana
-        ArrayList<Order> listOfOrders = new ArrayList<>();
+        ArrayList<OrderCraftsman> listOfOrders = new ArrayList<>();
 
-        // pobranie JSonArray i zapisanie do listOfOrders
+        // pobranie JSonObject i zapisanie do listOfOrders
         for (int i = 0; i < response.length(); i++) {
             try {
 
-                // pobranie danych do Order z JSONA
-                JSONObject jsonObject = response.getJSONObject(i);
+                // pobranie danych do OrderCraftsman z JSONA
+                JSONObject jsonObject = response.getJSONObject("" + i);
                 int id = jsonObject.getInt("id");
-                int client_id = -1; // zabezpieczenie przed null
-                int craftsman_id = -1; // zabezpieczenie przed null
-                String city = "city";
-
-                // TODO wstawić! jak już będzie craftsman_id not null i city sprawdzić
-                if (shar.getBoolean(C.KEY_FOR_SHAR_IS_CRAFTSMAN, false)) { // if user is client
-                    client_id = jsonObject.getInt("client_id");
-                } else { // if user is craftsman
-                    craftsman_id = jsonObject.getInt("craftsman_id");
-                    city = jsonObject.getString("city");
-                }
-
                 int region_id = jsonObject.getInt("region_id");
+                int service_id = jsonObject.getInt("service_id");
+                String description = jsonObject.getString("description");
+                String city = jsonObject.getString("city");
 
-                // pobranie region name dla danego region_id
+                // pobranie region craftsman_name dla danego region_id
                 String region_name = "";
                 ArrayList<Regions> arrayRegions = getRegionsList();
                 for (int j = 0; j < arrayRegions.size(); j++) {
@@ -92,11 +73,6 @@ public class Order {
                         region_name = currentRegion.getName();
                     }
                 }
-
-                int service_id = jsonObject.getInt("service_id");
-                String description = jsonObject.getString("description");
-                String offer_picked_at = jsonObject.getString("offer_picked_at");
-                String closed_at = jsonObject.getString("closed_at");
 
                 // pobranie industryNsme, serviceName na podstawie ServiceID
                 String serviceName = "";
@@ -108,7 +84,7 @@ public class Order {
                     }
                 }
                 // zapisanie do listy listOfOrders pobranych danych
-                Order currentOrder = new Order(id, client_id, region_id, craftsman_id, service_id, description, offer_picked_at, closed_at, serviceName, industryName, city, region_name);
+                OrderCraftsman currentOrder = new OrderCraftsman(id, region_id, service_id, description, serviceName, industryName, city,region_name);
                 listOfOrders.add(currentOrder);
 
             } catch (JSONException e) {
@@ -118,6 +94,7 @@ public class Order {
 
         return listOfOrders;
     }
+
 
 
     // pobranie listy regionó
@@ -178,23 +155,15 @@ public class Order {
         return listOfIndustriesAndServicesAcoordingToServiceID;
     }
 
-    public Order(int id, int client_id, int region_id, int craftsman_id, int service_id, String description, String offer_picked_at, String closed_at, String serviceName, String industryName, String city, String region_name) {
+    public OrderCraftsman(int id, int region_id, int service_id, String description, String serviceName, String industryName, String city, String region_name) {
         this.id = id;
-        this.client_id = client_id;
         this.region_id = region_id;
-        this.craftsman_id = craftsman_id;
         this.service_id = service_id;
         this.description = description;
-        this.offer_picked_at = offer_picked_at;
-        this.closed_at = closed_at;
         this.serviceName = serviceName;
         this.industryName = industryName;
         this.city = city;
         this.region_name = region_name;
-    }
-
-    public static String getTAG() {
-        return TAG;
     }
 
     public int getId() {
@@ -205,28 +174,12 @@ public class Order {
         this.id = id;
     }
 
-    public int getClient_id() {
-        return client_id;
-    }
-
-    public void setClient_id(int client_id) {
-        this.client_id = client_id;
-    }
-
     public int getRegion_id() {
         return region_id;
     }
 
     public void setRegion_id(int region_id) {
         this.region_id = region_id;
-    }
-
-    public int getCraftsman_id() {
-        return craftsman_id;
-    }
-
-    public void setCraftsman_id(int craftsman_id) {
-        this.craftsman_id = craftsman_id;
     }
 
     public int getService_id() {
@@ -243,22 +196,6 @@ public class Order {
 
     public void setDescription(String description) {
         this.description = description;
-    }
-
-    public String getOffer_picked_at() {
-        return offer_picked_at;
-    }
-
-    public void setOffer_picked_at(String offer_picked_at) {
-        this.offer_picked_at = offer_picked_at;
-    }
-
-    public String getClosed_at() {
-        return closed_at;
-    }
-
-    public void setClosed_at(String closed_at) {
-        this.closed_at = closed_at;
     }
 
     public String getServiceName() {
@@ -293,6 +230,133 @@ public class Order {
         this.region_name = region_name;
     }
 }
+
+//_______________________________________________________________________________________________________________________________________________________________________________________
+
+
+class OrderUser {
+
+    private static final String TAG = "OrderUser";
+
+    private Context context;
+
+    public OrderUser(Context context) {
+        this.context = context;
+    }
+
+    //shared pred
+    private SharedPreferences shar;
+    private SharedPreferences.Editor editor;
+
+    // zmina JSONArray response pobranego z neta na liste Orders
+    public ArrayList putOrdersToArrayList(JSONArray response, ArrayList<ServicesAndIndustryName> listOfIndustriesAndServicesAcoordingToServiceID) {
+
+        // shar pref
+        shar = context.getSharedPreferences("sharName", MODE_PRIVATE);
+
+        // lista Orders która jest zwracana
+        ArrayList<OrderUser> listOfOrders = new ArrayList<>();
+
+        // pobranie JSonObject i zapisanie do listOfOrders
+        for (int i = 0; i < response.length(); i++) {
+            try {
+                // pobranie danych do OrderCraftsman z JSONA
+                JSONObject jsonObject = response.getJSONObject(i);
+                int id = jsonObject.getInt("id");
+                int region_id = jsonObject.getInt("region_id");
+                int service_id = jsonObject.getInt("service_id");
+                String description = jsonObject.getString("description");
+
+                // pobranie industryNsme, serviceName na podstawie ServiceID
+                String serviceName = "";
+                String industryName = "";
+                for (ServicesAndIndustryName servicesAndIndustryName : listOfIndustriesAndServicesAcoordingToServiceID) {
+                    if (servicesAndIndustryName.getServiceId() == service_id) {
+                        serviceName = servicesAndIndustryName.getServiceName();
+                        industryName = servicesAndIndustryName.getIndustryName();
+                    }
+                }
+                // zapisanie do listy listOfOrders pobranych danych
+                OrderUser orderUser = new OrderUser(id, region_id, service_id, description, serviceName, industryName);
+                listOfOrders.add(orderUser);
+
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+        return listOfOrders;
+    }
+
+    // dane do stworzenia obiektu klasy OrderUser
+    private int id;
+    private int region_id;
+    private int service_id;
+    private String description;
+    private String serviceName;
+    private String industryName;
+
+    public OrderUser(int id, int region_id, int service_id, String description, String serviceName, String industryName) {
+        this.id = id;
+        this.region_id = region_id;
+        this.service_id = service_id;
+        this.description = description;
+        this.serviceName = serviceName;
+        this.industryName = industryName;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public int getRegion_id() {
+        return region_id;
+    }
+
+    public void setRegion_id(int region_id) {
+        this.region_id = region_id;
+    }
+
+    public int getService_id() {
+        return service_id;
+    }
+
+    public void setService_id(int service_id) {
+        this.service_id = service_id;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public String getServiceName() {
+        return serviceName;
+    }
+
+    public void setServiceName(String serviceName) {
+        this.serviceName = serviceName;
+    }
+
+    public String getIndustryName() {
+        return industryName;
+    }
+
+    public void setIndustryName(String industryName) {
+        this.industryName = industryName;
+    }
+}
+
+
+
+//_______________________________________________________________________________________________________________________________________________________________________________________
+
 
 class ServicesAndIndustryName {
     private int serviceId;
@@ -340,3 +404,5 @@ class ServicesAndIndustryName {
         IndustryName = industryName;
     }
 }
+
+//_______________________________________________________________________________________________________________________________________________________________________________________

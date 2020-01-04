@@ -2,7 +2,6 @@ package com.wolfmobileapps.gofix;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import android.accounts.Account;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -12,6 +11,7 @@ import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -21,8 +21,6 @@ import com.android.volley.toolbox.JsonArrayRequest;
 import com.android.volley.toolbox.Volley;
 
 import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -33,14 +31,13 @@ public class ActivityUserMain extends AppCompatActivity {
     private static final String TAG = "ActivityUserMain";
 
     //views
-    TextView textViewOrders;
-    TextView textViewNoOrders;
+    TextView textViewUserNoOrdersMain;
     Button buttonOrdersHistory;
-    ListView listViewOrders;
+    ListView listViewUserOrdersMain;
 
     // lista zleceń
-    private ArrayList<Order> listOfOrders;
-    private AdapterForOrders adapterForOrders;
+    private ArrayList<OrderUser> listOfOrders;
+    private AdapterForUserOrders adapterForUserOrders;
 
     //shared pred
     private SharedPreferences shar;
@@ -55,10 +52,9 @@ public class ActivityUserMain extends AppCompatActivity {
         setContentView(R.layout.activity_user_main);
 
         //views
-        textViewOrders = findViewById(R.id.textViewOrders);
-        textViewNoOrders = findViewById(R.id.textViewNoOrders);
+        textViewUserNoOrdersMain = findViewById(R.id.textViewUserNoOrdersMain);
         buttonOrdersHistory = findViewById(R.id.buttonOrdersHistory);
-        listViewOrders = findViewById(R.id.listViewOrders);
+        listViewUserOrdersMain = findViewById(R.id.listViewUserOrdersMain);
 
         // action bar
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -68,16 +64,16 @@ public class ActivityUserMain extends AppCompatActivity {
         shar = getSharedPreferences("sharName", MODE_PRIVATE);
         editor = shar.edit();
 
-        // lista branż + ściągnięcie z neta
+        // lista + ściągnięcie z neta
         listOfOrders = new ArrayList<>();
-        getDataFromUrl(C.API + "client/orders");
+        getDataFromUrl();
 
         // ustawienie adaptera
-        adapterForOrders = new AdapterForOrders(this,0,listOfOrders);
-        listViewOrders.setAdapter(adapterForOrders);
+        adapterForUserOrders = new AdapterForUserOrders(this,0,listOfOrders);
+        listViewUserOrdersMain.setAdapter(adapterForUserOrders);
 
         //podbranie nazwy Industry, industryID, nazwy Service i serviceID i zapisanie do array listOfIndustriesAndServicesAcoordingToServiceID
-        Order order = new Order(this);
+        OrderCraftsman order = new OrderCraftsman(this);
         listOfIndustriesAndServicesAcoordingToServiceID.addAll(order.putIndustriesAndServicesWithIDToArray ());
 
         // button do zleceń zamkniętych
@@ -89,38 +85,46 @@ public class ActivityUserMain extends AppCompatActivity {
         });
 
         //list view z ofertami
-        listViewOrders.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        listViewUserOrdersMain.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+
                 Intent listIntent = new Intent(ActivityUserMain.this, ActivityUserOffers.class);
 
-                //TODO order ID trzeba przypisać
-                int orderID = 1; // order ID trzeba przypisać
-                listIntent.putExtra(C.KEY_FOR_INTENT_TO_ORDER_ID, 1);
+                //przypisanie offer ID i wysłąnie razem z intent
+                OrderUser orderUserCurrent = (OrderUser) listViewUserOrdersMain.getItemAtPosition(position);
+                int orderID = orderUserCurrent.getId(); // pobranie order ID danego itema OrderUser
+                listIntent.putExtra(C.KEY_FOR_INTENT_TO_ORDER_ID, orderID);
                 startActivity(listIntent);
+
+                Log.d(TAG, "onItemClick, ActivityUserMain,  orderID(offer): " + orderID);
             }
         });
     }
 
     // pobranie listy zleceń i dodanie do listView
-    public void getDataFromUrl (String Url) {
-
-        Log.d(TAG, "sendLogin: Url: " + Url);
+    public void getDataFromUrl () {
 
         RequestQueue queue = Volley.newRequestQueue(this); // utworzenie requst - może być inne np o stringa lub JsonArrray
-        String url = Url; //url
+        String url = C.API + "client/orders"; //url
+        Log.d(TAG, "sendLogin: Url: " + url);
         JsonArrayRequest jsonArrayRequest = new JsonArrayRequest(Request.Method.GET, url, null, new Response.Listener<JSONArray>() {
             @Override
             public void onResponse(JSONArray response) {
 
+                // jeśli jest pusty JSON to wyłączy
+                if (response.toString().equals("[]")) {
+                    return;
+                }
+
                 // ukrycie textViewNoOrders
-                textViewNoOrders.setVisibility(View.INVISIBLE);
-                Log.d(TAG, "onResponse: response: " + response);
+                textViewUserNoOrdersMain.setVisibility(View.INVISIBLE);
+                Log.d(TAG, "ActivityUserMain: response: " + response);
 
                 // dodanie listy Orders z response
-                Order order = new Order(ActivityUserMain.this);
-                listOfOrders.addAll(order.putOrdersToArrayList(response, listOfIndustriesAndServicesAcoordingToServiceID));
-                adapterForOrders.notifyDataSetChanged();
+                OrderUser orderUser = new OrderUser(ActivityUserMain.this);
+                listOfOrders.addAll(orderUser.putOrdersToArrayList(response, listOfIndustriesAndServicesAcoordingToServiceID));
+                adapterForUserOrders.notifyDataSetChanged();
             }
         }, new Response.ErrorListener() {
             @Override

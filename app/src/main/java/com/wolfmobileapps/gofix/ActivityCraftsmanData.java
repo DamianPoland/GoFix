@@ -33,6 +33,9 @@ public class ActivityCraftsmanData extends AppCompatActivity {
         buttonCraftmanOFFersTaken = findViewById(R.id.buttonCraftmanOFFersTaken);
         buttonCraftmanOFFersHistory = findViewById(R.id.buttonCraftmanOFFersHistory);
 
+        // action bar
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setTitle("Panel Użytkownika");
 
         // shar pref
         shar = getSharedPreferences("sharName", MODE_PRIVATE);

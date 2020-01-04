@@ -26,9 +26,9 @@ import org.json.JSONObject;
 import java.util.HashMap;
 import java.util.Map;
 
-public class ActivityCraftsmanOffer extends AppCompatActivity {
+public class ActivityCraftsmanOfferToSend extends AppCompatActivity {
 
-    private static final String TAG = "ActivityCraftsmanOffer";
+    private static final String TAG = "AcCraftsmanOfferToSend";
 
     //views
     EditText editTextCraftsmanOfferDescription;
@@ -46,7 +46,7 @@ public class ActivityCraftsmanOffer extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_craftsman_offer);
+        setContentView(R.layout.activity_craftsman_offer_to_send);
 
         //views
         editTextCraftsmanOfferDescription = findViewById(R.id.editTextCraftsmanOfferDescription);
@@ -56,7 +56,6 @@ public class ActivityCraftsmanOffer extends AppCompatActivity {
         // pobranie danych z poprzedniego Intent
         Intent intentFromPrevActivity = getIntent();
         orderIdFromIntent = intentFromPrevActivity.getIntExtra("orderId", -1);
-        craftsmanIdFromIntent = intentFromPrevActivity.getIntExtra("craftsmanId", -1);
 
         // shar pref
         shar = getSharedPreferences("sharName", MODE_PRIVATE);
@@ -87,23 +86,27 @@ public class ActivityCraftsmanOffer extends AppCompatActivity {
                     showAlertDialog("Error", "Dodaj cenę"); // utworzenie alert Didalog
                     return;
                 }
+                // sprawdzenie czy editTextCraftsmanOfferPrice nie jest za duża
+                if (editTextCraftsmanOfferPrice.getText().toString().length() > 5) {
+                    showAlertDialog("Error", "Za wysoka cena (max 99.999 zł)"); // utworzenie alert Didalog
+                    return;
+                }
 
-                // pobranie danych i utworzenie obiektu CraftsmanOffer
+                // pobranie danych i utworzenie obiektu CraftsmanOfferToSend
                 int orderId = orderIdFromIntent;
-                // TODO dodać to do klasy CraftsmanOffer i tu  int craftsmanId = craftsmanIdFromIntent;
                 String details = editTextCraftsmanOfferDescription.getText().toString();
                 int price = Integer.parseInt(editTextCraftsmanOfferPrice.getText().toString());
                 Log.d(TAG, "onClick: \norderId: " + orderId + "\ndetails: " + details + "\nprice: " + price);
-                CraftsmanOffer craftsmanOffer = new CraftsmanOffer(orderId, details, price);
+                CraftsmanOfferToSend craftsmanOfferToSend = new CraftsmanOfferToSend(orderId, details, price);
 
-                // wysłanie obiektu CraftsmanOffer na server
+                // wysłanie obiektu CraftsmanOfferToSend na server
                 Gson gson = new Gson();
-                String descriptionString = gson.toJson(craftsmanOffer);
+                String descriptionString = gson.toJson(craftsmanOfferToSend);
                 try {
                     JSONObject jsonCraftsmanOffer = new JSONObject(descriptionString);
 
                     // metoda wysyłająca na server
-                    RequestQueue queue = Volley.newRequestQueue(ActivityCraftsmanOffer.this);
+                    RequestQueue queue = Volley.newRequestQueue(ActivityCraftsmanOfferToSend.this);
                     String url = C.API + "craftsman/offer"; //url
                     Log.d(TAG, "sendLogin: url: " + url);
                     JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, url, jsonCraftsmanOffer, new Response.Listener<JSONObject>() {
@@ -151,14 +154,14 @@ public class ActivityCraftsmanOffer extends AppCompatActivity {
 
     // utworzenie alert Didalog
     public void showAlertDialog(final String titule, String alertMessage) {
-        AlertDialog.Builder builder = new AlertDialog.Builder(ActivityCraftsmanOffer.this);
+        AlertDialog.Builder builder = new AlertDialog.Builder(ActivityCraftsmanOfferToSend.this);
         builder.setTitle(titule);
         builder.setMessage(alertMessage);
         builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 if (titule.equals("Potwierdzenie")){
-                    startActivity(new Intent(ActivityCraftsmanOffer.this, ActivityIndustries.class));
+                    startActivity(new Intent(ActivityCraftsmanOfferToSend.this, ActivityIndustries.class));
                     finish();
                 }
             }
@@ -167,13 +170,13 @@ public class ActivityCraftsmanOffer extends AppCompatActivity {
     }
 }
 
-class CraftsmanOffer {
+class CraftsmanOfferToSend {
 
     int orderId;
     String details;
     int price;
 
-    public CraftsmanOffer(int orderId, String details, int price) {
+    public CraftsmanOfferToSend(int orderId, String details, int price) {
         this.orderId = orderId;
         this.details = details;
         this.price = price;

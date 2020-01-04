@@ -86,7 +86,6 @@ public class ActivityRegistration extends AppCompatActivity {
     int industriesID;
     private ArrayList<Integer> listOfServicesIdToSend;
     int tokenNumber; // numer wysłany na maila do wpisania w pkę aby potwierdzić eMail
-    int mStatusCode; //Network response np 200 czyli success, a jeśli inny to failure
 
     // JSon Array wszystkich Industries i Services pobrana z API
     private JSONArray jsonArrayOfAllIndustries;
@@ -234,7 +233,7 @@ public class ActivityRegistration extends AppCompatActivity {
                 String currentPhoneNumber = editTextPhoneNumber.getText().toString().trim(); // pobranie phone number potrzebne tylko dla craftsman
                 ArrayList<Integer> servicesIdList = listOfServicesIdToSend; // pobranie listy services ID potrzebne tylko dla craftsman
 
-                Log.d(TAG, "onClick: All Data: " + "\n craftsmanOfUser:" + currentCraftsmanOfUser + "\n region: " + currentRegion + "\n name: " + currentName + "\n eMail: " + currentEMail + "\n password: " + currentPassword + "\n city: " + currentCity + "\n phoneNumber: " + currentPhoneNumber + "\n servicesIdList: " + servicesIdList);
+                Log.d(TAG, "onClick: All Data: " + "\n craftsmanOfUser:" + currentCraftsmanOfUser + "\n region: " + currentRegion + "\n craftsman_name: " + currentName + "\n eMail: " + currentEMail + "\n password: " + currentPassword + "\n city: " + currentCity + "\n phoneNumber: " + currentPhoneNumber + "\n servicesIdList: " + servicesIdList);
 
                 // Url api w zależności czy zwykły user czy craftsman
                 String apiUrl = "";

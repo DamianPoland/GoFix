@@ -15,7 +15,7 @@
         android:orientation="vertical">
 
         <TextView
-            android:id="@+id/textViewOrderRegionAndCity"
+            android:id="@+id/textViewForOfferCraftsmanName"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:padding="8dp"
@@ -24,7 +24,7 @@
             android:textSize="16sp" />
 
         <TextView
-            android:id="@+id/textViewOrderIndustryAndServiceCraftsman"
+            android:id="@+id/textViewForOfferCraftsmanPrice"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:padding="8dp"
@@ -34,7 +34,16 @@
 
 
         <TextView
-            android:id="@+id/textViewOrderDescriptionCraftsman"
+            android:id="@+id/textViewForOfferCraftsmanDescription"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="8dp"
+            android:text="order"
+            android:textColor="@android:color/black"
+            android:textSize="16sp" />
+
+        <TextView
+            android:id="@+id/textViewForOfferCraftsmanStars"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:padding="8dp"

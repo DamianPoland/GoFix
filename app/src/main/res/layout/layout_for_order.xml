@@ -32,23 +32,22 @@
             android:textColor="@android:color/black"
             android:textSize="16sp" />
 
-        <TextView
-            android:id="@+id/textViewOrder_offer_picked_at"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:padding="8dp"
-            android:text="order"
-            android:textColor="@android:color/black"
-            android:textSize="16sp" />
 
         <TextView
-            android:id="@+id/textViewOrder_closed_at"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:padding="8dp"
-            android:text="order"
-            android:textColor="@android:color/black"
-            android:textSize="16sp" />
+            android:id="@+id/buttonOrdersToChoseCraftsman"
+            android:layout_width="wrap_content"
+            android:layout_height="30dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="8dp"
+            android:text="  Wybierz wykonawcę  "
+            android:background="@drawable/button_custom"
+            android:textSize="14sp"
+            android:textAllCaps="false"
+            android:textColor="@color/colorBlack"
+            android:layout_marginBottom="16dp"
+            android:layout_gravity="center_horizontal"
+            android:gravity="center_vertical"/>
+
 
     </LinearLayout>
 

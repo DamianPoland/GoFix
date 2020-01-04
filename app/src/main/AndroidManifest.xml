@@ -15,13 +15,12 @@
         <activity android:name=".ActivityCraftsmanOFFersHistory"></activity>
         <activity android:name=".ActivityCraftsmanOFFersTaken" />
         <activity android:name=".ActivityCraftsmanOFFersAll" />
-        <activity android:name=".ActivityCraftsmanData" />
-        <activity android:name=".ActivityCraftsmanOffer" />
+        <activity android:name=".ActivityCraftsmanData"
+            android:parentActivityName=".ActivityIndustries"/>
+        <activity android:name=".ActivityCraftsmanOfferToSend" />
         <activity android:name=".ActivityUserOffers" />
         <activity android:name=".ActivityUserHistory" />
-        <activity
-            android:name=".ActivityCraftsmanAllOrders"
-            android:parentActivityName=".ActivityIndustries" />
+        <activity android:name=".ActivityCraftsmanAllOrders" />
         <activity
             android:name=".ActivityAdvice"
             android:parentActivityName=".ActivityIndustries" />

@@ -104,7 +104,7 @@ public class ActivityOrderDescription extends AppCompatActivity {
                 int industryIDToSend = industryID; // to nie jest potrzebne do wysyłania do API bo ID service jest jednoznaczne
                 int serviceIDToSend = serviceID;
                 String orderText = editTextDescription.getText().toString();
-                Log.d(TAG, "Order: \nindustryIDToSend: " + industryIDToSend + "\nserviceIDToSend: " + serviceIDToSend + "\norderText: " + orderText);
+                Log.d(TAG, "OrderCraftsman: \nindustryIDToSend: " + industryIDToSend + "\nserviceIDToSend: " + serviceIDToSend + "\norderText: " + orderText);
 
                 // wysłanie danych do API
                 String apiUrl = C.API + "client/order";

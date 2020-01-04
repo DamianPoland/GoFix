@@ -8,7 +8,7 @@
 
 
     <TextView
-        android:id="@+id/textViewOrders"
+        android:id="@+id/textViewUserHistory"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
@@ -20,7 +20,7 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
-        android:id="@+id/textViewNoHistoryOrders"
+        android:id="@+id/textViewUserHistoryNoOrders"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
@@ -28,6 +28,20 @@
         android:text="Brak zamkniętych zleceń"
         android:textSize="16sp"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textViewOrders" />
+        app:layout_constraintTop_toBottomOf="@+id/textViewUserHistory" />
+
+    <ListView
+        android:id="@+id/listViewUserHistory"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_marginTop="24dp"
+        android:divider="@color/colorBackgroundGray200"
+        android:dividerHeight="0dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textViewUserHistory">
+
+    </ListView>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
