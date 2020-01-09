@@ -12,12 +12,14 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonArrayRequest;
+import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 
 import org.json.JSONArray;
@@ -172,10 +174,11 @@ public class ActivityUserOffers extends AppCompatActivity {
 
         Log.d(TAG, "sendLogin: Url: " + url);
 
-        JsonArrayRequest jsonArrayRequest = new JsonArrayRequest(Request.Method.PUT, url, null, new Response.Listener<JSONArray>() {
+        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.PUT, url, null, new Response.Listener<JSONObject>() {
             @Override
-            public void onResponse(JSONArray response) {
+            public void onResponse(JSONObject response) {
                 Log.d(TAG, TAG + ", onResponse: response: " + response);
+                showAlertDialog("Wybrałeś ofertę tego Wykonawcy"); // alert dialog z opisem jak się wszystko uda i przejście do głównego activity
 
 
             }
@@ -183,7 +186,7 @@ public class ActivityUserOffers extends AppCompatActivity {
             @Override
             public void onErrorResponse(VolleyError error) {
                 Log.d(TAG, "getDataFromUrl.onErrorResponse: " + error);
-
+                showAlertDialog("Nie udało się wybrać oferty tego Wykonawcy \n" + error.toString()); // alert dialog z opisem jak się NIE uda
             }
         }) {    //this is the part, that adds the header to the request
             @Override
@@ -196,7 +199,23 @@ public class ActivityUserOffers extends AppCompatActivity {
                 return params;
             }
         };
-        queue.add(jsonArrayRequest); //wywołanie klasy
+        queue.add(jsonObjectRequest); //wywołanie klasy
+    }
+
+    // utworzenie alert Didalog
+    public void showAlertDialog( String alertMessage) {
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(ActivityUserOffers.this);
+        builder.setTitle("Oferta");
+        builder.setMessage(alertMessage);
+        builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+
+            }
+        }).create();
+
+        builder.show();
     }
 }
 

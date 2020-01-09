@@ -28,14 +28,19 @@ public class ActivityUserHistory extends AppCompatActivity {
     private static final String TAG = "ActivityUserHistory";
 
     //views
-    TextView textViewUserHistoryNoOrders;
-    ListView listViewUserHistory;
+    private TextView textViewUserHistoryNoOrders;
+    private ListView listViewUserHistory;
 
     //shared pred
     private SharedPreferences shar;
     private SharedPreferences.Editor editor;
 
+    // tak samo jak w ActivityUserMain -  lista zleceń
+    private ArrayList<OrderUser> listOfUserOrdersHistory;
+    private AdapterForUserOrders adapterForUserOrdersHistory;
 
+    //tak samo jak w ActivityUserMain -  list Serwices
+    private ArrayList<ServicesAndIndustryName> listOfIndustriesAndServicesAcoordingToServiceID = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,9 +55,17 @@ public class ActivityUserHistory extends AppCompatActivity {
         shar = getSharedPreferences("sharName", MODE_PRIVATE);
         editor = shar.edit();
 
-        // lista + ściągnięcie z neta
-        //listOfOrders = new ArrayList<>();
+        // tak samo jak w ActivityUserMain -  lista + ściągnięcie z neta
+        listOfUserOrdersHistory = new ArrayList<>();
         getDataFromUrl();
+
+        // tak samo jak w ActivityUserMain -  ustawienie adaptera
+        adapterForUserOrdersHistory = new AdapterForUserOrders(this, 0, listOfUserOrdersHistory);
+        listViewUserHistory.setAdapter(adapterForUserOrdersHistory);
+
+        //tak samo jak w ActivityUserMain - podbranie nazwy Industry, industryID, nazwy Service i serviceID i zapisanie do array listOfIndustriesAndServicesAcoordingToServiceID
+        ServicesAndIndustryName servicesAndIndustryName = new ServicesAndIndustryName();
+        listOfIndustriesAndServicesAcoordingToServiceID.addAll(servicesAndIndustryName.putIndustriesAndServicesWithIDToArray(this));
     }
 
     // pobranie listy zleceń i dodanie do listView
@@ -74,7 +87,14 @@ public class ActivityUserHistory extends AppCompatActivity {
                 textViewUserHistoryNoOrders.setVisibility(View.INVISIBLE);
                 Log.d(TAG, "ActivityUserMain: response: " + response);
 
-                //TODO zrobić response i adapter i layout jak w activity user mine (zamiast wybierz wykonawce to zrobić wystaw opinie
+
+                // tak samo jak w ActivityUserMain -  dodanie listy Orders z response
+                OrderUser orderUser = new OrderUser(ActivityUserHistory.this);
+                listOfUserOrdersHistory.addAll(orderUser.putOrdersToArrayList(response, listOfIndustriesAndServicesAcoordingToServiceID));
+                adapterForUserOrdersHistory.notifyDataSetChanged();
+
+
+
 
             }
         }, new Response.ErrorListener() {

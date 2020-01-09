@@ -60,6 +60,12 @@ public class ActivityIndustries extends AppCompatActivity {
         progressBarIndustries = findViewById(R.id.progressBarIndustries);
         buttonAdvice = findViewById(R.id.buttonGoodCraftsMan);
 
+        // ustwienie logo
+        getSupportActionBar().setDisplayShowHomeEnabled(true);
+        getSupportActionBar().setLogo(R.mipmap.ic_launcher);
+        getSupportActionBar().setDisplayUseLogoEnabled(true);
+        setTitle(getResources().getString(R.string.app_name));
+
         // shar pref
         shar = getSharedPreferences("sharName", MODE_PRIVATE);
         editor = shar.edit();

@@ -9,11 +9,11 @@ import android.widget.TextView;
 
 import java.util.List;
 
-public class AdapterForCraftsmanOFFersAll  extends ArrayAdapter<CraftsmanOffersAll> {
+public class AdapterForCraftsmanOFFers extends ArrayAdapter<CraftsmanOffers> {
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-        CraftsmanOffersAll currentItem = getItem(position);
+        CraftsmanOffers currentItem = getItem(position);
         if (convertView==null){
             convertView= LayoutInflater.from(getContext()).inflate(R.layout.layout_forcraftsman_offers_all,parent,false);
         }
@@ -28,7 +28,7 @@ public class AdapterForCraftsmanOFFersAll  extends ArrayAdapter<CraftsmanOffersA
 
         return convertView;
     }
-    public AdapterForCraftsmanOFFersAll(Context context, int resource, List objects) {
+    public AdapterForCraftsmanOFFers(Context context, int resource, List objects) {
         super(context, resource, objects);
     }
 }

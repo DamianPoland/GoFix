@@ -18,6 +18,7 @@ import com.android.volley.toolbox.Volley;
 
 import org.json.JSONArray;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -26,12 +27,16 @@ public class ActivityCraftsmanOFFersTaken extends AppCompatActivity {
     private static final String TAG = "ActivityCraftsmanOFFers";
 
     //views
-    TextView textViewCraftsmanOFFersTakenNo;
-    ListView listViewCraftsmanOFFersTaken;
+    private TextView textViewCraftsmanOFFersTakenNo;
+    private ListView listViewCraftsmanOFFersTaken;
 
     //shared pred
     private SharedPreferences shar;
     private SharedPreferences.Editor editor;
+
+    // lista zleceń
+    private ArrayList<CraftsmanOffers> listOfCraftsmanOFFers;
+    private AdapterForCraftsmanOFFers adapterForCraftsmanOFFers;
 
 
     @Override
@@ -48,7 +53,12 @@ public class ActivityCraftsmanOFFersTaken extends AppCompatActivity {
         editor = shar.edit();
 
         // lista OFFers ściągnięcie z neta
+        listOfCraftsmanOFFers = new ArrayList<>();
         getDataFromUrl();
+
+        // ustawienie adaptera
+        adapterForCraftsmanOFFers = new AdapterForCraftsmanOFFers(this,0, listOfCraftsmanOFFers);
+        listViewCraftsmanOFFersTaken.setAdapter(adapterForCraftsmanOFFers);
     }
 
     // pobranie listy zleceń i dodanie do listView
@@ -65,7 +75,10 @@ public class ActivityCraftsmanOFFersTaken extends AppCompatActivity {
                 textViewCraftsmanOFFersTakenNo.setVisibility(View.INVISIBLE);
                 Log.d(TAG, "onResponse: response: " + response);
 
-                //TODO oferty powrzucać do array adptera i pokazać w list view
+                // przetworzenie danych z response na arrayList
+                CraftsmanOffers craftsmanOffers = new CraftsmanOffers();
+                listOfCraftsmanOFFers.addAll(craftsmanOffers.getDataFromUrlResponse(response));
+                adapterForCraftsmanOFFers.notifyDataSetChanged();
 
             }
         }, new Response.ErrorListener() {

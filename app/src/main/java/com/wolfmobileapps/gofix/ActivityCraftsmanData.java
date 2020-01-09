@@ -5,18 +5,25 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.util.ArrayList;
 
 public class ActivityCraftsmanData extends AppCompatActivity {
 
     private static final String TAG = "ActivityCraftsmanData";
 
     //views
-    Button  buttonCraftmanAllOrders;
-    Button buttonCraftmanOFFersAll;
-    Button buttonCraftmanOFFersTaken;
-    Button buttonCraftmanOFFersHistory;
+    private Button  buttonCraftmanAllOrders;
+    private Button buttonCraftmanOFFersAll;
+    private Button buttonCraftmanOFFersTaken;
+    private Button buttonCraftmanOFFersHistory;
 
     //shared pred
     private SharedPreferences shar;
@@ -72,9 +79,5 @@ public class ActivityCraftsmanData extends AppCompatActivity {
                 startActivity(new Intent(ActivityCraftsmanData.this, ActivityCraftsmanOFFersHistory.class));
             }
         });
-
-
     }
-
-
 }

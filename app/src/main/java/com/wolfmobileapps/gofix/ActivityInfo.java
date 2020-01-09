@@ -105,6 +105,7 @@ public class ActivityInfo extends AppCompatActivity {
             });
         }
         if (titule.equals("Właściciel:")) {
+            builder.setIcon(R.drawable.gofix_logo_color_transparent);
             builder.setNegativeButton("Odwiedź stronę", new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {

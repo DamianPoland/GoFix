@@ -17,9 +17,11 @@ import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonArrayRequest;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
@@ -67,8 +69,8 @@ public class ActivityCraftsmanAllOrders extends AppCompatActivity {
         listViewOfOrdersCraftsman.setAdapter(adapterForCraftsmanOrders);
 
         //podbranie nazwy Industry, industryID, nazwy Service i serviceID i zapisanie do array listOfIndustriesAndServicesAcoordingToServiceID
-        OrderCraftsman order = new OrderCraftsman(this);
-        listOfIndustriesAndServicesAcoordingToServiceID.addAll(order.putIndustriesAndServicesWithIDToArray ());
+        ServicesAndIndustryName order = new ServicesAndIndustryName();
+        listOfIndustriesAndServicesAcoordingToServiceID.addAll(order.putIndustriesAndServicesWithIDToArray (this));
 
         //list view z ofertami, onClick jeśli ma być wysłąna oferta do danego OrderCraftsman
         listViewOfOrdersCraftsman.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -105,9 +107,9 @@ public class ActivityCraftsmanAllOrders extends AppCompatActivity {
         RequestQueue queue = Volley.newRequestQueue(this); // utworzenie requst - może być inne np o stringa lub JsonArrray
         String url = C.API + "craftsman/orders/open"; //url
         Log.d(TAG, "sendLogin: url: " + url);
-        JsonObjectRequest jsonArrayRequest = new JsonObjectRequest(Request.Method.GET, url, null, new Response.Listener<JSONObject>() {
+        JsonArrayRequest jsonArrayRequest = new JsonArrayRequest(Request.Method.GET, url, null, new Response.Listener<JSONArray>() {
             @Override
-            public void onResponse(JSONObject response) {
+            public void onResponse(JSONArray response) {
 
                 // ukrycie textViewNoOrders
                 textViewNoOrdersCraftsman.setVisibility(View.INVISIBLE);

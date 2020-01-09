@@ -12,37 +12,53 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true">
-        <activity android:name=".ActivityCraftsmanOFFersHistory"></activity>
-        <activity android:name=".ActivityCraftsmanOFFersTaken" />
-        <activity android:name=".ActivityCraftsmanOFFersAll" />
+        <activity android:name=".ActivityCraftsmanOFFersHistory"
+            android:screenOrientation="portrait"/>
+        <activity android:name=".ActivityCraftsmanOFFersTaken"
+            android:screenOrientation="portrait"/>
+        <activity android:name=".ActivityCraftsmanOFFersAll"
+            android:screenOrientation="portrait"/>
         <activity android:name=".ActivityCraftsmanData"
-            android:parentActivityName=".ActivityIndustries"/>
-        <activity android:name=".ActivityCraftsmanOfferToSend" />
-        <activity android:name=".ActivityUserOffers" />
-        <activity android:name=".ActivityUserHistory" />
-        <activity android:name=".ActivityCraftsmanAllOrders" />
+            android:parentActivityName=".ActivityIndustries"
+            android:screenOrientation="portrait"/>
+        <activity android:name=".ActivityCraftsmanOfferToSend"
+            android:screenOrientation="portrait"/>
+        <activity android:name=".ActivityUserOffers"
+            android:screenOrientation="portrait"/>
+        <activity android:name=".ActivityUserHistory"
+            android:screenOrientation="portrait"/>
+        <activity android:name=".ActivityCraftsmanAllOrders"
+            android:screenOrientation="portrait"/>
         <activity
             android:name=".ActivityAdvice"
-            android:parentActivityName=".ActivityIndustries" />
+            android:parentActivityName=".ActivityIndustries"
+            android:screenOrientation="portrait"/>
         <activity
             android:name=".ActivityInfo"
-            android:parentActivityName=".ActivityIndustries" />
+            android:parentActivityName=".ActivityIndustries"
+            android:screenOrientation="portrait"/>
         <activity
             android:name=".ActivityUserMain"
-            android:parentActivityName=".ActivityIndustries" />
+            android:parentActivityName=".ActivityIndustries"
+            android:screenOrientation="portrait"/>
         <activity
             android:name=".ActivityRegistration"
-            android:parentActivityName=".ActivityLogin" />
+            android:parentActivityName=".ActivityLogin"
+            android:screenOrientation="portrait"/>
         <activity
             android:name=".ActivityOrderDescription"
-            android:parentActivityName=".ActivityIndustries" />
+            android:parentActivityName=".ActivityIndustries"
+            android:screenOrientation="portrait"/>
         <activity
             android:name=".ActivityLogin"
-            android:parentActivityName=".ActivityIndustries" />
+            android:parentActivityName=".ActivityIndustries"
+            android:screenOrientation="portrait"/>
         <activity
             android:name=".ActivityServices"
-            android:parentActivityName=".ActivityIndustries" />
-        <activity android:name=".ActivityIndustries">
+            android:parentActivityName=".ActivityIndustries"
+            android:screenOrientation="portrait"/>
+        <activity android:name=".ActivityIndustries"
+            android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

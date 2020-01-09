@@ -17,8 +17,6 @@ import com.android.volley.toolbox.JsonArrayRequest;
 import com.android.volley.toolbox.Volley;
 
 import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -37,8 +35,8 @@ public class ActivityCraftsmanOFFersAll extends AppCompatActivity {
     private SharedPreferences.Editor editor;
 
     // lista zleceń
-    private ArrayList<CraftsmanOffersAll> listOfCraftsmanOFFersAll;
-    private AdapterForCraftsmanOFFersAll adapterForCraftsmanOFFersAll;
+    private ArrayList<CraftsmanOffers> listOfCraftsmanOFFers;
+    private AdapterForCraftsmanOFFers adapterForCraftsmanOFFers;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,11 +52,12 @@ public class ActivityCraftsmanOFFersAll extends AppCompatActivity {
         editor = shar.edit();
 
         // lista OFFers ściągnięcie z neta
-        listOfCraftsmanOFFersAll = new ArrayList<>();
+        listOfCraftsmanOFFers = new ArrayList<>();
         getDataFromUrl();
+
         // ustawienie adaptera
-        adapterForCraftsmanOFFersAll = new AdapterForCraftsmanOFFersAll(this,0, listOfCraftsmanOFFersAll);
-        listViewCraftsmanOFFersAll.setAdapter(adapterForCraftsmanOFFersAll);
+        adapterForCraftsmanOFFers = new AdapterForCraftsmanOFFers(this,0, listOfCraftsmanOFFers);
+        listViewCraftsmanOFFersAll.setAdapter(adapterForCraftsmanOFFers);
 
     }
 
@@ -76,27 +75,12 @@ public class ActivityCraftsmanOFFersAll extends AppCompatActivity {
                 textViewCraftsmanOFFersAllNo.setVisibility(View.INVISIBLE);
                 Log.d(TAG, "onResponse: response: " + response);
 
-                // pobranie JSonArray i zapisanie do listOfOrders
-                for (int i = 0; i < response.length(); i++) {
-                    try {
 
-                        // pobranie danych z JSONA i zapisanie do listy listOfCraftsmanOFFersAll
-                        JSONObject jsonObject = response.getJSONObject(i);
-                        int id = jsonObject.getInt("id"); // id zlecenia
-                        int order_id = jsonObject.getInt("order_id");
-                        String details = jsonObject.getString("details");
-                        String price = jsonObject.getString("price");
-                        String city = jsonObject.getString("city");
-                        String client_name = jsonObject.getString("client_name");
+                // przetworzenie danych z response na arrayList
+                CraftsmanOffers craftsmanOffers = new CraftsmanOffers();
+                listOfCraftsmanOFFers.addAll(craftsmanOffers.getDataFromUrlResponse(response));
+                adapterForCraftsmanOFFers.notifyDataSetChanged();
 
-                        Log.d(TAG, "onResponse: \nid: " + id + "\norder_id: " + order_id + "\ndetails: " + details + "\nprice: " + price + "\ncity: " + city + "\nclient_name: " + client_name);
-                        CraftsmanOffersAll craftsmanOffersAll = new CraftsmanOffersAll(id, order_id, details, price, city, client_name);
-                        listOfCraftsmanOFFersAll.add(craftsmanOffersAll);
-                        adapterForCraftsmanOFFersAll.notifyDataSetChanged();
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
-                }
             }
         }, new Response.ErrorListener() {
             @Override
@@ -120,69 +104,4 @@ public class ActivityCraftsmanOFFersAll extends AppCompatActivity {
     }
 }
 
-class CraftsmanOffersAll {
 
-    private int id;
-    private int order_id;
-    private String details;
-    private String price;
-    private String city;
-    private String client_name;
-
-    public CraftsmanOffersAll(int id, int order_id, String details, String price, String city, String client_name) {
-        this.id = id;
-        this.order_id = order_id;
-        this.details = details;
-        this.price = price;
-        this.city = city;
-        this.client_name = client_name;
-    }
-
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
-    }
-
-    public int getOrder_id() {
-        return order_id;
-    }
-
-    public void setOrder_id(int order_id) {
-        this.order_id = order_id;
-    }
-
-    public String getDetails() {
-        return details;
-    }
-
-    public void setDetails(String details) {
-        this.details = details;
-    }
-
-    public String getPrice() {
-        return price;
-    }
-
-    public void setPrice(String price) {
-        this.price = price;
-    }
-
-    public String getCity() {
-        return city;
-    }
-
-    public void setCity(String city) {
-        this.city = city;
-    }
-
-    public String getClient_name() {
-        return client_name;
-    }
-
-    public void setClient_name(String client_name) {
-        this.client_name = client_name;
-    }
-}
