@@ -161,7 +161,7 @@ public class ActivityCraftsmanOfferToSend extends AppCompatActivity {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 if (titule.equals("Potwierdzenie")){
-                    startActivity(new Intent(ActivityCraftsmanOfferToSend.this, ActivityIndustries.class));
+                    startActivity(new Intent(ActivityCraftsmanOfferToSend.this, ActivityCraftsmanData.class));
                     finish();
                 }
             }

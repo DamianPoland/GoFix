@@ -65,11 +65,16 @@ public class ActivityCraftsmanOFFersTaken extends AppCompatActivity {
     public void getDataFromUrl () {
 
         RequestQueue queue = Volley.newRequestQueue(this); // utworzenie requst - może być inne np o stringa lub JsonArrray
-        String url = C.API + "craftsman/orders"; //url
+        String url = C.API + "craftsman/orders/picked"; //url
         Log.d(TAG, "sendLogin: url: " + url);
         JsonArrayRequest jsonArrayRequest = new JsonArrayRequest(Request.Method.GET, url, null, new Response.Listener<JSONArray>() {
             @Override
             public void onResponse(JSONArray response) {
+
+                // jeśli jest pusty JSON to wyłączy
+                if (response.toString().equals("[]")) {
+                    return;
+                }
 
                 // ukrycie textViewNoOrders
                 textViewCraftsmanOFFersTakenNo.setVisibility(View.INVISIBLE);

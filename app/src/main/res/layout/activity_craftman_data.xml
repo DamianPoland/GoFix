@@ -49,9 +49,10 @@
                         android:text="Nazwa: " />
 
                     <TextView
+                        android:id="@+id/textViewCraftsmanDataName"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Example"
+                        android:text="-"
                         android:textColor="@color/colorBlack" />
 
                 </LinearLayout>
@@ -71,9 +72,10 @@
                         android:text="E-mail: " />
 
                     <TextView
+                        android:id="@+id/textViewCraftsmanDataEmail"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Example"
+                        android:text="-"
                         android:textColor="@color/colorBlack" />
 
                 </LinearLayout>
@@ -93,14 +95,16 @@
                         android:text="Punkty: " />
 
                     <TextView
+                        android:id="@+id/textViewCraftsmanDataBalance"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="100"
+                        android:text="-"
                         android:textColor="@color/colorBlack" />
 
                 </LinearLayout>
 
                 <Button
+                    android:id="@+id/buttonChangeCraftsmanData"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_vertical"
@@ -128,7 +132,7 @@
                     android:layout_marginTop="16dp"
                     android:layout_marginBottom="16dp"
                     android:background="@drawable/button_custom_dark"
-                    android:text="  Wszystkie zlecenia  "
+                    android:text="  Wszystkie oferty w okolicy  "
                     android:textColor="@color/colorWhite"
 />
 
@@ -140,7 +144,7 @@
                     android:layout_marginTop="16dp"
                     android:layout_marginBottom="16dp"
                     android:background="@drawable/button_custom_dark"
-                    android:text="  Moje złożone oferty  "
+                    android:text="  Moje złożone zlecenia  "
                     android:textColor="@color/colorWhite" />
 
                 <Button
@@ -151,7 +155,7 @@
                     android:layout_marginTop="16dp"
                     android:layout_marginBottom="16dp"
                     android:background="@drawable/button_custom_dark"
-                    android:text="  Moje zaakceptowane oferty  "
+                    android:text="  Moje zaakceptowane zlecenia  "
                     android:textColor="@color/colorWhite" />
 
                 <Button
@@ -162,7 +166,7 @@
                     android:layout_marginTop="16dp"
                     android:layout_marginBottom="16dp"
                     android:background="@drawable/button_custom_dark"
-                    android:text="  Moje zakończone oferty  "
+                    android:text="  Moje zakończone zlecenia  "
                     android:textColor="@color/colorWhite" />
 
             </LinearLayout>

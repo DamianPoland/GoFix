@@ -203,7 +203,7 @@ public class ActivityUserOffers extends AppCompatActivity {
     }
 
     // utworzenie alert Didalog
-    public void showAlertDialog( String alertMessage) {
+    public void showAlertDialog(final String alertMessage) {
 
         AlertDialog.Builder builder = new AlertDialog.Builder(ActivityUserOffers.this);
         builder.setTitle("Oferta");
@@ -212,6 +212,11 @@ public class ActivityUserOffers extends AppCompatActivity {
             @Override
             public void onClick(DialogInterface dialog, int which) {
 
+                // jeśli dostanie odpowiedż z Api że wybrano wykonawcę to przejdzie do głównego Activity żeby odświerzyć wszystko
+                if(alertMessage.equals("Wybrałeś ofertę tego Wykonawcy")){
+                    startActivity(new Intent(ActivityUserOffers.this, ActivityIndustries.class));
+                    finish();
+                }
             }
         }).create();
 

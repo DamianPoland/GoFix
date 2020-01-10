@@ -17,14 +17,21 @@ public class AdapterForCraftsmanOFFers extends ArrayAdapter<CraftsmanOffers> {
         if (convertView==null){
             convertView= LayoutInflater.from(getContext()).inflate(R.layout.layout_forcraftsman_offers_all,parent,false);
         }
+        TextView textViewAdapterCraftsmanOffersAllPicketOrNot = convertView.findViewById(R.id.textViewAdapterCraftsmanOffersAllPicketOrNot);
         TextView textViewAdapterCraftsmanOffersAllCityAndClientName = convertView.findViewById(R.id.textViewAdapterCraftsmanOffersAllCityAndClientName);
         TextView textViewAdapterCraftsmanOffersAllDetail = convertView.findViewById(R.id.textViewAdapterCraftsmanOffersAllDetail);
         TextView textViewAdapterCraftsmanOffersAllPrice = convertView.findViewById(R.id.textViewAdapterCraftsmanOffersAllPrice);
 
 
-        textViewAdapterCraftsmanOffersAllCityAndClientName.setText("Miasto: " + currentItem.getCity() +"\nNazwa klienta: " + currentItem.getClient_name());
-        textViewAdapterCraftsmanOffersAllDetail.setText("Opis: \n " + currentItem.getDetails());
-        textViewAdapterCraftsmanOffersAllPrice.setText("Twoja cena: " + currentItem.getPrice() + " zł");
+        // jeśli oferta została wybrana przez klienta to pokaże textView z tą informacją
+        if (!currentItem.getOffer_picked_at().equals("")) {
+            textViewAdapterCraftsmanOffersAllPicketOrNot.setVisibility(View.VISIBLE);
+        }
+
+
+        textViewAdapterCraftsmanOffersAllCityAndClientName.setText("Nazwa klienta: " + currentItem.getClient_name() + "\nMiasto: " + currentItem.getCity() + "\nOpis zlecenia: " + currentItem.getDescription());
+        textViewAdapterCraftsmanOffersAllDetail.setText("Moja oferta: \n " + currentItem.getOffer_details());
+        textViewAdapterCraftsmanOffersAllPrice.setText("Moja cena: " + currentItem.getOffer_price() + " zł");
 
         return convertView;
     }
