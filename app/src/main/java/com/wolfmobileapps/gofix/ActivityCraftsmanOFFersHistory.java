@@ -78,7 +78,7 @@ public class ActivityCraftsmanOFFersHistory extends AppCompatActivity {
 
                 // ukrycie textViewNoOrders
                 textViewCraftsmanOFFersHistoryNo.setVisibility(View.INVISIBLE);
-                Log.d(TAG, "onResponse: response: " + response);
+                Log.d(TAG, TAG + "onResponse: response: " + response);
 
                 // przetworzenie danych z response na arrayList
                 CraftsmanOffers craftsmanOffers = new CraftsmanOffers();

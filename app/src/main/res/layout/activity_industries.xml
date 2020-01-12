@@ -6,7 +6,6 @@
     android:layout_height="match_parent"
     tools:context=".ActivityIndustries">
 
-
     <TextView
         android:id="@+id/textViewTitule"
         android:layout_width="wrap_content"

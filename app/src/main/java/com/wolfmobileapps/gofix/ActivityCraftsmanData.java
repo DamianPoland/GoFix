@@ -116,41 +116,32 @@ public class ActivityCraftsmanData extends AppCompatActivity {
         });
     }
 
-    // pobranie danych o craftsmanie
+    // pobranie danych o craftsmanie z API i wstawienie do textView
     public void getDataFromUrl () {
 
         RequestQueue queue = Volley.newRequestQueue(this); // utworzenie requst - może być inne np o stringa lub JsonArrray
-        String url = C.API + "craftsman/orders/applied"; //url
+        String url = C.API + "user/preferences"; //url
         Log.d(TAG, "sendLogin: url: " + url);
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, url, null, new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject response) {
 
-                // jeśli jest pusty JSON to wyłączy
-                if (response.toString().equals("[]")) {
-                    return;
-                }
+                Log.d(TAG, "onResponse: response: " + response);
 
+                //pobiera danae i wstawia do textViews
                 try {
-                    String service_id = response.getString("service_id"); // pobranie nazwy craftsmana
-                    String email= response.getString("service_id"); // pobranie emaila craftsmana
-                    int id = response.getInt("id"); // pobranie punktów craftsmana
-
+                    String name = response.getString("name"); // pobranie nazwy craftsmana
+                    String email= response.getString("email"); // pobranie emaila craftsmana
+                    int balance = response.getInt("balance"); // pobranie punktów craftsmana
 
                     // ustawienie danych w textViews
-                    textViewCraftsmanDataName.setText("Example");
-                    textViewCraftsmanDataEmail.setText("Example");
-                    textViewCraftsmanDataBalance.setText("Example");
+                    textViewCraftsmanDataName.setText(name);
+                    textViewCraftsmanDataEmail.setText(email);
+                    textViewCraftsmanDataBalance.setText("" + balance);
 
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
-
-
-
-
-
-
             }
         }, new Response.ErrorListener() {
             @Override

@@ -186,21 +186,35 @@ public class ActivityLogin extends AppCompatActivity {
 
                     // pobranie info z servera JSONA z errorem
                     JSONObject jsonObject = new JSONObject(errorDataResponse);
-                    String messageError = "";
-                    // jeśli kod 422 to zły email
+                    String eoorMessage = "";
+                    // jeśli kod 422 to zły email lub hasło
                     if (errorCodeResponse == 422) {
                         JSONObject errorsJsonObject = jsonObject.getJSONObject("errors");
-                        messageError = errorsJsonObject.getString("email");
-                        Log.d(TAG, "onErrorResponse: emailError: " + messageError);
+
+                        // pobranie info z servera o złym password i wyświetlenie w alert dialog
+                        try {
+                            JSONArray jsonArray = errorsJsonObject.getJSONArray("password");
+                            eoorMessage = (String) jsonArray.get(0);
+                        }
+                        catch (JSONException e){}
+
+                        // pobranie info z servera o złym emailu i wyświetlenie w alert dialog
+                        try {
+                            JSONArray jsonArray = errorsJsonObject.getJSONArray("email");
+                            eoorMessage = (String) jsonArray.get(0);
+                        }
+                        catch (JSONException e){}
+
+                        Log.d(TAG, "onErrorResponse: " + errorDataResponse);
                     }
 
                     if (errorCodeResponse == 401) {
-                        messageError = jsonObject.getString("message");
-                        Log.d(TAG, "onErrorResponse: messageError: " + messageError);
+                        eoorMessage = "Niepoprawny login lub hasło";
+                        Log.d(TAG, "onErrorResponse: eoorMessage: " + eoorMessage); // wypada błąd invalid credetials
                     }
 
                     // wyświetlenie errora w alert dialog
-                    showAlertDialog(messageError);
+                    showAlertDialog(eoorMessage);
 
                 } catch (UnsupportedEncodingException e) {
                     e.printStackTrace();

@@ -111,6 +111,8 @@ public class ActivityCraftsmanAllOrders extends AppCompatActivity {
             @Override
             public void onResponse(JSONArray response) {
 
+                Log.d(TAG, "onResponse: response: " + response);
+
                 // jeśli jest pusty JSON to wyłączy
                 if (response.toString().equals("[]")) {
                     return;
@@ -118,7 +120,6 @@ public class ActivityCraftsmanAllOrders extends AppCompatActivity {
 
                 // ukrycie textViewNoOrders
                 textViewNoOrdersCraftsman.setVisibility(View.INVISIBLE);
-                Log.d(TAG, "onResponse: response: " + response);
 
                 // dodanie listy Orders z response
                 OrderCraftsman order = new OrderCraftsman(ActivityCraftsmanAllOrders.this);

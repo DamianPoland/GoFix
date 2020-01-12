@@ -35,9 +35,13 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.UnsupportedEncodingException;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+
+import static java.nio.charset.StandardCharsets.ISO_8859_1;
+import static java.nio.charset.StandardCharsets.UTF_8;
 
 
 public class ActivityRegistration extends AppCompatActivity {
@@ -337,15 +341,33 @@ public class ActivityRegistration extends AppCompatActivity {
                     String errorDataResponse = new String(error.networkResponse.data, "UTF-8"); // rozpakowanie do stringa errorDataResponse który jest JSonem lub czymś innym
                     Log.d(TAG, "onErrorResponse: errorData: " + errorDataResponse);
 
-                    // jeśli kod 422 to zły: email lub region lub phoneNumber - tylko email może być zły wysłąny bo resztę mam w apce sprawdzone
+                    // jeśli kod 422 to zły: email lub hasło
                     if (errorCodeResponse == 422) {
 
-                        // pobranie info z servera o złym emailu i wyświetlenie w alert dialog
                         JSONObject jsonObject = new JSONObject(errorDataResponse);
                         JSONObject errorsJsonObject = jsonObject.getJSONObject("errors");
-                        String emailError = errorsJsonObject.getString("email");
-                        Log.d(TAG, "onErrorResponse: emailError: " + emailError);
-                        showAlertDialog(emailError);
+
+                        String eoorMessage = "";
+
+                        // pobranie info z servera o złym password i wyświetlenie w alert dialog
+                        try {
+                            JSONArray jsonArray = errorsJsonObject.getJSONArray("password");
+                            eoorMessage = (String) jsonArray.get(0);
+                        }
+                        catch (JSONException e){}
+
+                        // pobranie info z servera o złym emailu i wyświetlenie w alert dialog
+                        try {
+                            JSONArray jsonArray = errorsJsonObject.getJSONArray("email");
+                            eoorMessage = (String) jsonArray.get(0);
+                        }
+                        catch (JSONException e){}
+
+
+                        // pokazanie alert dialogu
+                        showAlertDialog(eoorMessage);
+
+                        Log.d(TAG, "onErrorResponse: " + errorDataResponse);
                     }
                 } catch (UnsupportedEncodingException e) {
                     e.printStackTrace();

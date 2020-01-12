@@ -21,11 +21,9 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:padding="8dp"
-            android:text="ZATWIERDZONE ZLECENIE"
+            tools:text="ZATWIERDZONE ZLECENIE"
             android:textColor="@android:color/holo_green_dark"
-            android:textSize="12sp"
-            android:visibility="gone"
-            tools:visibility="visible"/>
+            android:textSize="12sp" />
 
         <TextView
             android:id="@+id/textViewAdapterCraftsmanOffersAllCityAndClientName"

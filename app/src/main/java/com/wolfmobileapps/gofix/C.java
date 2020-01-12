@@ -571,12 +571,13 @@ class CraftsmanOffers {
     private String service_id; // id danego servisu
     private String description; // klient opisuje zlecenie czyli order
     private String created_at; // data utworzenia oferty przez craftsmana, jak nie to pusty string czyli ""
-    private String closed_at; // data zamknięcia oferty, jak nie zamknięta to pusty string czyli "",
+    private String closed_at; // data zamknięcia oferty (po ocenie craftsmana czyli podaniu ilości gwiazdek przez klienta), jak nie zamknięta to pusty string czyli "",
     private String city;  // nazwa miasta clienta który dodał zlecenie czyli order
     private String client_name;  // nzawa klienta
     private String offer_price; // cena w ofercoe od craftsmana
     private String offer_details; // opis oferty craftsmana w odpowiedzi na order
-    private String offer_picked_at; // data wybrania ofertycraftsmana przez klienta, jak nie to pusty string czyli "", pokaze się tu data jak został wybrany TEN craftsman, jak INNY to nadal "" i wpadnie do historii
+    private String offer_picked_at; // data wybrania oferty craftsmana przez klienta, jak nie to pusty string czyli "", pokaze się tu data jak został wybrany craftsman
+    private String offer_rejected_at; // jeśli oferta danego craftsmana nie zostałą wybrana (inny craftsman został wybrany) to pojawi się data, jeśli jeszcze rzaden craftsman nie jest wybrany to będzie ""
 
     // pobranie JSonArray i zapisanie do listOfCraftsmanOFFersAll
     public ArrayList<CraftsmanOffers> getDataFromUrlResponse(JSONArray response) {
@@ -598,8 +599,9 @@ class CraftsmanOffers {
                 String offer_price = jsonObject.getString("offer_price"); // cena w ofercoe od craftsmana
                 String offer_details = jsonObject.getString("offer_details"); // opis oferty craftsmana w odpowiedzi na order
                 String offer_picked_at = jsonObject.getString("offer_picked_at"); // data wybrania ofertycraftsmana przez klienta, jak nie to pusty string czyli "",
+                String offer_rejected_at = jsonObject.getString("offer_rejected_at"); // jeśli oferta danego craftsmana nie zostałą wybrana
 
-                CraftsmanOffers craftsmanOffers = new CraftsmanOffers(id, service_id,description, created_at, closed_at, city, client_name, offer_price, offer_details, offer_picked_at);
+                CraftsmanOffers craftsmanOffers = new CraftsmanOffers(id, service_id,description, created_at, closed_at, city, client_name, offer_price, offer_details, offer_picked_at, offer_rejected_at);
                 listOfCraftsmanOFFersAll.add(craftsmanOffers);
                 Log.d(TAG, "getDataFromUrlResponse:craftsmanOffers: " + craftsmanOffers.toString());
             } catch (JSONException e) {
@@ -613,7 +615,7 @@ class CraftsmanOffers {
     public CraftsmanOffers() {
     }
 
-    public CraftsmanOffers(int id, String service_id, String description, String created_at, String closed_at, String city, String client_name, String offer_price, String offer_details, String offer_picked_at) {
+    public CraftsmanOffers(int id, String service_id, String description, String created_at, String closed_at, String city, String client_name, String offer_price, String offer_details, String offer_picked_at, String offer_rejected_at) {
         this.id = id;
         this.service_id = service_id;
         this.description = description;
@@ -624,6 +626,7 @@ class CraftsmanOffers {
         this.offer_price = offer_price;
         this.offer_details = offer_details;
         this.offer_picked_at = offer_picked_at;
+        this.offer_rejected_at = offer_rejected_at;
     }
 
     public int getId() {
@@ -704,6 +707,14 @@ class CraftsmanOffers {
 
     public void setOffer_picked_at(String offer_picked_at) {
         this.offer_picked_at = offer_picked_at;
+    }
+
+    public String getOffer_rejected_at() {
+        return offer_rejected_at;
+    }
+
+    public void setOffer_rejected_at(String offer_rejected_at) {
+        this.offer_rejected_at = offer_rejected_at;
     }
 }
 
