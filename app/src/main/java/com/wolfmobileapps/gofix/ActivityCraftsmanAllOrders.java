@@ -76,26 +76,42 @@ public class ActivityCraftsmanAllOrders extends AppCompatActivity {
         listViewOfOrdersCraftsman.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, final int position, long id) {
-                AlertDialog.Builder builder = new AlertDialog.Builder(ActivityCraftsmanAllOrders.this);
-                builder.setTitle("Oferta");
-                builder.setMessage("Czy chcesz wysłać ofertę do tego zlecenia?");
-                builder.setPositiveButton("TAK", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        Intent currentIntent = new Intent(ActivityCraftsmanAllOrders.this, ActivityCraftsmanOfferToSend.class);
-                        OrderCraftsman currentOrder = (OrderCraftsman) listViewOfOrdersCraftsman.getItemAtPosition(position);
-                        int orderId = currentOrder.getId();
-                        currentIntent.putExtra("orderId", orderId);
-                        startActivity(currentIntent);
-                        finish();
-                    }
-                }).setNegativeButton("NIE", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        // do something when click cancel
-                    }
-                }).create();
-                builder.show();
+
+                // jeśli liczba punktów jest mniejsza od 1 to craftsman nie moze wystawiać ofert
+                if (shar.getInt(C.KEY_FOR_BALANCE_SHAR, 0) < 1) {
+                    AlertDialog.Builder builder = new AlertDialog.Builder(ActivityCraftsmanAllOrders.this);
+                    builder.setTitle("Brak punktów");
+                    builder.setMessage("Nie masz wystarczającej liczby punków aby wysłać ofertę. Doładuj konto aby móc dodawać oferty.");
+                    builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            finish();
+                        }
+                    }).create();
+                    builder.show();
+                } else {
+
+                    AlertDialog.Builder builder = new AlertDialog.Builder(ActivityCraftsmanAllOrders.this);
+                    builder.setTitle("Oferta");
+                    builder.setMessage("Czy chcesz wysłać ofertę do tego zlecenia?");
+                    builder.setPositiveButton("TAK", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            Intent currentIntent = new Intent(ActivityCraftsmanAllOrders.this, ActivityCraftsmanOfferToSend.class);
+                            OrderCraftsman currentOrder = (OrderCraftsman) listViewOfOrdersCraftsman.getItemAtPosition(position);
+                            int orderId = currentOrder.getId();
+                            currentIntent.putExtra("orderId", orderId);
+                            startActivity(currentIntent);
+                            finish();
+                        }
+                    }).setNegativeButton("NIE", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            // do something when click cancel
+                        }
+                    }).create();
+                    builder.show();
+                }
             }
         });
 

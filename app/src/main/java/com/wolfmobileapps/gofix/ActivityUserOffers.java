@@ -134,7 +134,7 @@ public class ActivityUserOffers extends AppCompatActivity {
                         JSONObject jsonObject = response.getJSONObject(i);
                         int id = jsonObject.getInt("id");
                         int order_id = jsonObject.getInt("order_id");
-                        float craftsman_rating = jsonObject.getInt("craftsman_rating");
+                        float craftsman_rating = Float.parseFloat("" + jsonObject.getDouble("craftsman_rating"));
                         String details = jsonObject.getString("details");
                         String price = jsonObject.getString("price");
                         String craftsman_name = jsonObject.getString("craftsman_name");

@@ -34,6 +34,7 @@ public class ActivityCraftsmanData extends AppCompatActivity {
     //views
     private TextView textViewCraftsmanDataName;
     private TextView textViewCraftsmanDataEmail;
+    private TextView textViewCraftsmanRating;
     private TextView textViewCraftsmanDataBalance;
     private Button buttonChangeCraftsmanData;
     private Button  buttonCraftmanAllOrders;
@@ -54,6 +55,7 @@ public class ActivityCraftsmanData extends AppCompatActivity {
         textViewCraftsmanDataName = findViewById(R.id.textViewCraftsmanDataName);
         textViewCraftsmanDataEmail = findViewById(R.id.textViewCraftsmanDataEmail);
         textViewCraftsmanDataBalance = findViewById(R.id.textViewCraftsmanDataBalance);
+        textViewCraftsmanRating = findViewById(R.id.textViewCraftsmanRating);
         buttonChangeCraftsmanData = findViewById(R.id.buttonChangeCraftsmanData);
         buttonCraftmanAllOrders = findViewById(R.id.buttonCraftmanAllOrders);
         buttonCraftmanOFFersAll = findViewById(R.id.buttonCraftmanOFFersAll);
@@ -133,11 +135,22 @@ public class ActivityCraftsmanData extends AppCompatActivity {
                     String name = response.getString("name"); // pobranie nazwy craftsmana
                     String email= response.getString("email"); // pobranie emaila craftsmana
                     int balance = response.getInt("balance"); // pobranie punktów craftsmana
+                    float craftsman_rating = Float.parseFloat("" + response.getDouble("rating")); // pobranie ratingu craftsmana
 
                     // ustawienie danych w textViews
                     textViewCraftsmanDataName.setText(name);
                     textViewCraftsmanDataEmail.setText(email);
+                    // jeśli craftsman nie będzi miałjeszcze ocen to będzi 0 i wtedy pokazę brak ocen
+                    if (craftsman_rating == 0) {
+                        textViewCraftsmanRating.setText("Brak ocen");
+                    } else {
+                        textViewCraftsmanRating.setText("" + craftsman_rating + "/10");
+                    }
                     textViewCraftsmanDataBalance.setText("" + balance);
+
+                    // zapisanie ilości punktów do shar żeby jak będzie 0 to nie pozwolił na dalsze dodawanie ofert przez craftsmana
+                    editor.putInt(C.KEY_FOR_BALANCE_SHAR, balance);
+                    editor.apply();
 
                 } catch (JSONException e) {
                     e.printStackTrace();

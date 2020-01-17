@@ -26,7 +26,13 @@ public class AdapterForOfferFromCraftsman  extends ArrayAdapter<OfferFromCraftsm
         textViewForOfferCraftsmanName.setText("Nazwa: " + currentItem.getCraftsman_name());
         textViewForOfferCraftsmanPrice.setText("Cena: " + currentItem.getPrice() + " zł");
         textViewForOfferCraftsmanDescription.setText("Opis: \n" + currentItem.getDetails());
-        textViewForOfferCraftsmanStars.setText("Ocena: " + currentItem.getCraftsman_rating() + "\\10");
+        // jeśli craftsman nie będzie miał jeszcze ocen to będzie 0
+        if (currentItem.getCraftsman_rating() == 0) {
+            textViewForOfferCraftsmanStars.setText("Ocena: brak ocen");
+        }else {
+            textViewForOfferCraftsmanStars.setText("Ocena: " + currentItem.getCraftsman_rating() + "\\10");
+        }
+
         return convertView;
     }
     public AdapterForOfferFromCraftsman(Context context, int resource, List objects) {
