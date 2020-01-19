@@ -31,10 +31,10 @@ public class ActivityAdvice extends AppCompatActivity {
                 "\n\n4. Fachowiec nie używa słów „nie wiem”, „nie da się”, „nie umiem”." +
                 "\n\n5. Fachowiec zawsze ma niezbędne narzędzia do pracy." +
                 "\n\n6. Fachowiec nigdy nie pyta klienta „czy ma Pan/Pani może drabinę, młotek itp.”." +
-                "\n\n7. Fachowiec zawsze powinien być schludnie ubrany i dobrze się prezentuje." +
+                "\n\n7. Fachowiec zawsze powinien być schludnie ubrany i dobrze się prezentować." +
                 "\n\n8. Fachowiec zawsze kończy swoją pracę." +
-                "\n\n9. Fachowiec umie oszacować koszt i czas pracy." +
-                "\n\n10. Fachowiec po skończone pracy zawsze odbiera telefon i służy pomocą.";
+                "\n\n9. Fachowiec powinien oszacować koszt i czas powierzonego mu zadania." +
+                "\n\n10. Fachowiec po skończonej pracy zawsze odbiera telefon od klienta i służy pomocą. ";
 
         textViewAdvice.setText(textAdvice);
     }
