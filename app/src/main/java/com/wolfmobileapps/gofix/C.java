@@ -16,7 +16,7 @@ import static android.content.Context.MODE_PRIVATE;
 public class C {
 
     //api gółówne co się nie zmienia
-    public static final String API = "http://gofixdev.cichowski.me/api/"; // było "http://gofix.cichowski.me/api/"
+    public static final String API = "https://gofix.pl/api/"; // było "http://gofix.cichowski.me/api/" i "http://gofixdev.cichowski.me/api/"
 
     // key do shar pref gdzie jest zapisane pierwsze API czyli wszystkie branże i podbranże
     public static final String KEY_FOR_SHAR_INDUSTRIES_AND_SERVICES = "key for shar industries and services";

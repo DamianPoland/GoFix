@@ -25,7 +25,9 @@ public class ActivityAdvice extends AppCompatActivity {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setTitle("Nasza rada");
 
-        String textAdvice = "1. Fachowiec jest zawsze na czas." +
+        String textAdvice = "Polska to duży kraj mający wielu wspaniałych, doświadczonych i wykwalifikowanych fachowców – polskich i zagranicznych.\n" +
+                "\nJak w tym gąszczu rozpoznać prawdziwego fachowca? Oto nasza rola." +
+                "\n\n1. Fachowiec jest zawsze na czas." +
                 "\n\n2. Fachowiec dotrzymuje słowa." +
                 "\n\n3. Fachowiec zawsze doradzi." +
                 "\n\n4. Fachowiec nie używa słów „nie wiem”, „nie da się”, „nie umiem”." +
