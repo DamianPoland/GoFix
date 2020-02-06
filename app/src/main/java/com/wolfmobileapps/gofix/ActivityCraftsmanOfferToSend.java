@@ -12,6 +12,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 
+import com.android.volley.DefaultRetryPolicy;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
@@ -142,6 +143,13 @@ public class ActivityCraftsmanOfferToSend extends AppCompatActivity {
                             return params;
                         }
                     };
+
+                    // liczba ponownych requestów to zero i czeka 50s
+                    jsonObjectRequest.setRetryPolicy(new DefaultRetryPolicy(
+                            50000,
+                            0,
+                            DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
+
                     queue.add(jsonObjectRequest); //wywołanie klasy
 
                 } catch (JSONException e) {

@@ -20,6 +20,8 @@
 # hide the original source file craftsman_name.
 #-renamesourcefileattribute SourceFile
 
+-keep class com.wolfmobileapps.gofix.** { *; } # jest po to żeby Gson dobrze działał gdy jest releae - w debug dziłą dobrze bez tego, trzeba wkleić package z kropką na końcu
+
 -assumenosideeffects class android.util.Log {
    public static boolean isLoggable(java.lang.String, int);
    public static int v(...);

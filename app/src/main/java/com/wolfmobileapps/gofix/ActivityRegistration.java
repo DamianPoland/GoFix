@@ -16,9 +16,11 @@ import android.widget.CheckedTextView;
 import android.widget.EditText;
 import android.widget.GridView;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.Spinner;
 import android.widget.Toast;
 
+import com.android.volley.DefaultRetryPolicy;
 import com.android.volley.NetworkResponse;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -67,6 +69,7 @@ public class ActivityRegistration extends AppCompatActivity {
     private EditText editTextTokenFromEmail;
     private Button buttonRegistry;
     private Button buttonLogin;
+    private ProgressBar progressBarWeiting;
 
     //shared pred
     private SharedPreferences shar;
@@ -90,6 +93,10 @@ public class ActivityRegistration extends AppCompatActivity {
     int industriesID;
     private ArrayList<Integer> listOfServicesIdToSend;
     int tokenNumber; // numer wysłany na maila do wpisania w pkę aby potwierdzić eMail
+
+    //dane do wysyłania na serwer z rejestracją i tokenem
+    private String currentEMail;
+
 
     // JSon Array wszystkich Industries i Services pobrana z API
     private JSONArray jsonArrayOfAllIndustries;
@@ -119,6 +126,7 @@ public class ActivityRegistration extends AppCompatActivity {
         editTextTokenFromEmail = findViewById(R.id.editTextTokenFromEmail);
         buttonRegistry = findViewById(R.id.buttonRegistry);
         buttonLogin = findViewById(R.id.buttonLogin);
+        progressBarWeiting = findViewById(R.id.progressBarWeiting);
 
         // action bar
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -231,7 +239,7 @@ public class ActivityRegistration extends AppCompatActivity {
                 boolean currentCraftsmanOfUser = isCraftsman; // jeśli jest true to craftsman a jeśli false to user
                 int currentRegion = regionID;
                 String currentName = editTextName.getText().toString();
-                String currentEMail = editTextEmail.getText().toString().trim();
+                currentEMail = editTextEmail.getText().toString().trim();
                 String currentPassword = editTextPassword.getText().toString();
                 String currentCity = editTextCity.getText().toString(); // pobranie city potrzebne tylko dla user
                 String currentPhoneNumber = editTextPhoneNumber.getText().toString().trim(); // pobranie phone number potrzebne tylko dla craftsman
@@ -258,6 +266,10 @@ public class ActivityRegistration extends AppCompatActivity {
                     JSONObject json = new JSONObject(currentUserOrCraftsmanString);
                     sendRegistrationData(apiUrl, json); // metoda do wysyłanie obiektu na serwer
 
+                    //usuniecie przycisku i pokazanie progress bara
+                    buttonRegistry.setVisibility(View.GONE);
+                    progressBarWeiting.setVisibility(View.VISIBLE);
+
                 } catch (JSONException e) {
                     Log.d(TAG, "JSONException: " + e);
                 }
@@ -283,7 +295,7 @@ public class ActivityRegistration extends AppCompatActivity {
                 String apiUrl = C.API + "user/confirm"; //Url do wysłąnie na server
                 Gson gson = new Gson();
                 int tokenFromEditText = Integer.parseInt(editTextTokenFromEmail.getText().toString());
-                TokenNumber tokenNumberItem = new TokenNumber(tokenFromEditText);
+                TokenNumber tokenNumberItem = new TokenNumber(tokenFromEditText, currentEMail);
                 String tokenString = gson.toJson(tokenNumberItem);
                 try {
                     JSONObject jsonObjectToken = new JSONObject(tokenString);
@@ -307,6 +319,10 @@ public class ActivityRegistration extends AppCompatActivity {
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, url, json, new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject response) {
+
+                //pokazanie przycisku i usunięcie progress bara
+                buttonRegistry.setVisibility(View.VISIBLE);
+                progressBarWeiting.setVisibility(View.GONE);
 
                 Log.d(TAG, "JSONObject response: " + response.toString());
 
@@ -332,8 +348,10 @@ public class ActivityRegistration extends AppCompatActivity {
             @Override
             public void onErrorResponse(VolleyError error) {
 
-                Toast.makeText(ActivityRegistration.this, "Error", Toast.LENGTH_SHORT).show();
-                // do something when error
+                //pokazanie przycisku i usunięcie progress bara
+                buttonRegistry.setVisibility(View.VISIBLE);
+                progressBarWeiting.setVisibility(View.GONE);
+
                 int errorCodeResponse = error.networkResponse.statusCode; // jeśli inny niż 200 to tu się pojawi cod błędu i trzeba go obsłużyć, jeśli 200 to succes i nie włączt wogle metody onErrorResponse
                 Log.d(TAG, "onErrorResponse: resp: " + errorCodeResponse);
 
@@ -385,6 +403,13 @@ public class ActivityRegistration extends AppCompatActivity {
                 return params;
             }
         };
+
+        // liczba ponownych requestów to zero i czeka 50s
+        jsonObjectRequest.setRetryPolicy(new DefaultRetryPolicy(
+                50000,
+                0,
+                DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
+
         queue.add(jsonObjectRequest); //wywołanie klasy
     }
 
@@ -766,9 +791,11 @@ class Craftsman {
 class TokenNumber {
 
     int token;
+    String email;
 
-    public TokenNumber(int token) {
+    public TokenNumber(int token, String email) {
         this.token = token;
+        this.email = email;
     }
 
     public int getToken() {
@@ -777,5 +804,13 @@ class TokenNumber {
 
     public void setToken(int token) {
         this.token = token;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
     }
 }

@@ -17,6 +17,7 @@ import android.widget.RatingBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.android.volley.DefaultRetryPolicy;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
@@ -257,7 +258,14 @@ public class ActivityUserMain extends AppCompatActivity {
                     return params;
                 }
             };
+            // liczba ponownych requestów to zero i czeka 50s
+            jsonArrayRequest.setRetryPolicy(new DefaultRetryPolicy(
+                    50000,
+                    0,
+                    DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
+
             queue.add(jsonArrayRequest); //wywołanie klasy
+
         } catch (JSONException e) {
             e.printStackTrace();
         }

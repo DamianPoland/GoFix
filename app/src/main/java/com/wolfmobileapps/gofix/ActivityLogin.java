@@ -14,6 +14,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.android.volley.DefaultRetryPolicy;
 import com.android.volley.NetworkResponse;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -25,6 +26,7 @@ import com.android.volley.toolbox.Volley;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import com.google.gson.annotations.SerializedName;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -234,6 +236,13 @@ public class ActivityLogin extends AppCompatActivity {
                 return params;
             }
         };
+
+        // liczba ponownych requestów to zero i czeka 50s
+        jsonObjectRequest.setRetryPolicy(new DefaultRetryPolicy(
+                50000,
+                0,
+                DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
+
         queue.add(jsonObjectRequest); //wywołanie klasy
     }
 
@@ -265,6 +274,7 @@ public class ActivityLogin extends AppCompatActivity {
 
 // klasa do wysłąnia loginu i hasła na serwer ____________________________________________________________________________________
 class Login {
+
 
     String email;
     String password;
