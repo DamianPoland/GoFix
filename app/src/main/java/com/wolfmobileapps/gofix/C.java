@@ -44,6 +44,9 @@ public class C {
 
     // key do balance czyli punktów craftsmana ile ma - do shar
     public static final String KEY_FOR_BALANCE_SHAR = "key for balance shar";
+
+    // key do tokena nadego urządzenia żeby wysyłąć powiadomienia push - do shar
+    public static final String KEY_FOR_NOTIFICATIONS_SHAR = "key for notifications shar";
 }
 
 //_______________________________________________________________________________________________________________________________________________________________________________________

@@ -100,7 +100,8 @@ public class ActivityLogin extends AppCompatActivity {
                 // jeśli nie ma nulli i pustych stringów to wyśle login i hasło
                 String email = editTextEmail.getText().toString();
                 String haslo = editTextHaslo.getText().toString();
-                Login login = new Login(email, haslo);
+                String token_notifications = shar.getString(C.KEY_FOR_NOTIFICATIONS_SHAR, "");
+                Login login = new Login(email, haslo, token_notifications);
 
                 // zmiana instancji obiektu na jsona(trzeba zaimplementować GSON bibliotekę)
                 Gson gson = new Gson();
@@ -141,7 +142,7 @@ public class ActivityLogin extends AppCompatActivity {
     }
 
 
-    // wysłąnie loginu i hasła
+    // wysłąnie loginu i hasła i tokena
     public void sendLogin(String Url, JSONObject json) {
 
         Log.d(TAG, "sendLogin: JSONObject: " + json);
@@ -278,10 +279,12 @@ class Login {
 
     String email;
     String password;
+    String token_notifications;
 
-    public Login(String email, String password) {
+    public Login(String email, String password, String token_notifications) {
         this.email = email;
         this.password = password;
+        this.token_notifications = token_notifications;
     }
 
     public String getEmail() {
@@ -298,5 +301,13 @@ class Login {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public String getToken_notifications() {
+        return token_notifications;
+    }
+
+    public void setToken_notifications(String token_notifications) {
+        this.token_notifications = token_notifications;
     }
 }

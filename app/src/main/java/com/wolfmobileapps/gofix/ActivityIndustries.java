@@ -1,5 +1,6 @@
 package com.wolfmobileapps.gofix;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -23,6 +24,10 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonArrayRequest;
 import com.android.volley.toolbox.Volley;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.iid.FirebaseInstanceId;
+import com.google.firebase.iid.InstanceIdResult;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -72,6 +77,26 @@ public class ActivityIndustries extends AppCompatActivity {
 
         // pobranie regionów i zapisanie do shar
         getDataRegionsAndPutToShar();
+
+        // do notification z firebase: wzięte z https://firebase.google.com/docs/cloud-messaging/android/first-message -> Retrieve the current registration token
+        // token zmienia się przy ponownej instalacji aplikacji na urządzeniu. Gdy apla jest wyłączana i odpalana to sięnie zmienaia
+        FirebaseInstanceId.getInstance().getInstanceId()
+                .addOnCompleteListener(new OnCompleteListener<InstanceIdResult>() {
+                    @Override
+                    public void onComplete(@NonNull Task<InstanceIdResult> task) {
+                        if (!task.isSuccessful()) {
+                            Log.w(TAG, "getInstanceId failed", task.getException());
+                            return;
+                        }
+                        String token = task.getResult().getToken(); // Get new Instance ID token
+                        Log.d(TAG, "Token is: " + token);
+
+                        //zapisanie tokenu do notifications do shar
+                        editor.putString(C.KEY_FOR_NOTIFICATIONS_SHAR, token);
+                        editor.apply();
+                    }
+                });
+
 
         // lista branż + ściągnięcie z neta
         listOfIndustries = new ArrayList<>();

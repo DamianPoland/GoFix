@@ -30,20 +30,16 @@ import com.android.volley.toolbox.JsonArrayRequest;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 import com.google.gson.Gson;
-import com.google.gson.JsonObject;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.UnsupportedEncodingException;
-import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
-import static java.nio.charset.StandardCharsets.ISO_8859_1;
-import static java.nio.charset.StandardCharsets.UTF_8;
 
 
 public class ActivityRegistration extends AppCompatActivity {
@@ -295,7 +291,8 @@ public class ActivityRegistration extends AppCompatActivity {
                 String apiUrl = C.API + "user/confirm"; //Url do wysłąnie na server
                 Gson gson = new Gson();
                 int tokenFromEditText = Integer.parseInt(editTextTokenFromEmail.getText().toString());
-                TokenNumber tokenNumberItem = new TokenNumber(tokenFromEditText, currentEMail);
+                String token_notifications = shar.getString(C.KEY_FOR_NOTIFICATIONS_SHAR, "");
+                TokenNumber tokenNumberItem = new TokenNumber(tokenFromEditText, currentEMail, token_notifications);
                 String tokenString = gson.toJson(tokenNumberItem);
                 try {
                     JSONObject jsonObjectToken = new JSONObject(tokenString);
@@ -792,10 +789,12 @@ class TokenNumber {
 
     int token;
     String email;
+    String token_notifications;
 
-    public TokenNumber(int token, String email) {
+    public TokenNumber(int token, String email, String token_notifications) {
         this.token = token;
         this.email = email;
+        this.token_notifications = token_notifications;
     }
 
     public int getToken() {
@@ -812,5 +811,13 @@ class TokenNumber {
 
     public void setEmail(String email) {
         this.email = email;
+    }
+
+    public String getToken_notifications() {
+        return token_notifications;
+    }
+
+    public void setToken_notifications(String token_notifications) {
+        this.token_notifications = token_notifications;
     }
 }

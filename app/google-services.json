@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "834751961987",
+    "firebase_url": "https://gofixfinal.firebaseio.com",
+    "project_id": "gofixfinal",
+    "storage_bucket": "gofixfinal.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:834751961987:android:4ec94ddc94885dc434b4b6",
+        "android_client_info": {
+          "package_name": "com.wolfmobileapps.gofix"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "834751961987-aundc9hemvcd4dtep895crblu63mp4h3.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.wolfmobileapps.gofix",
+            "certificate_hash": "17a7d7cba00b386822c3d303a1a3e4ccdebcb32b"
+          }
+        },
+        {
+          "client_id": "834751961987-eibjk7op2pfpkadr9qrrdui2o9vlth7t.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC0vz8YwCldt3QDN6jDL6tvkAqebnXd57c"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "834751961987-eibjk7op2pfpkadr9qrrdui2o9vlth7t.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
