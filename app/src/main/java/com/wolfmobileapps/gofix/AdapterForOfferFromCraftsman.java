@@ -18,20 +18,24 @@ public class AdapterForOfferFromCraftsman  extends ArrayAdapter<OfferFromCraftsm
             convertView= LayoutInflater.from(getContext()).inflate(R.layout.layout_for_offer_for_craftsman,parent,false);
         }
         TextView textViewForOfferCraftsmanName = convertView.findViewById(R.id.textViewForOfferCraftsmanName);
-        TextView textViewForOfferCraftsmanPrice = convertView.findViewById(R.id.textViewForOfferCraftsmanPrice);
-        TextView textViewForOfferCraftsmanDescription = convertView.findViewById(R.id.textViewForOfferCraftsmanDescription);
         TextView textViewForOfferCraftsmanStars = convertView.findViewById(R.id.textViewForOfferCraftsmanStars);
+
+        // usunięte przez klienta - opis w ActivityCraftsmanOfferToSend - w layout_for_order NIC nie zmienione
+//        TextView textViewForOfferCraftsmanPrice = convertView.findViewById(R.id.textViewForOfferCraftsmanPrice);
+//        TextView textViewForOfferCraftsmanDescription = convertView.findViewById(R.id.textViewForOfferCraftsmanDescription);
 
 
         textViewForOfferCraftsmanName.setText("Nazwa: " + currentItem.getCraftsman_name());
-        textViewForOfferCraftsmanPrice.setText("Cena: " + currentItem.getPrice() + " zł");
-        textViewForOfferCraftsmanDescription.setText("Opis: \n" + currentItem.getDetails());
-        // jeśli craftsman nie będzie miał jeszcze ocen to będzie 0
         if (currentItem.getCraftsman_rating() == 0) {
-            textViewForOfferCraftsmanStars.setText("Ocena: brak ocen");
+            textViewForOfferCraftsmanStars.setText("Ocena: brak ocen"); // jeśli craftsman nie będzi miałjeszcze ocen to będzi 0 i wtedy pokazę brak ocen
         }else {
-            textViewForOfferCraftsmanStars.setText("Ocena: " + currentItem.getCraftsman_rating() + "\\10");
+            float raitingInt  = Math.round(currentItem.getCraftsman_rating()*5);
+            textViewForOfferCraftsmanStars.setText("Ocena: " + (raitingInt/10)); // raiting dostaje w skali 1-10 a ma być wyświetlany w skali 0,5-5
         }
+
+        // usunięte przez klienta - opis w ActivityCraftsmanOfferToSend
+//        textViewForOfferCraftsmanPrice.setText("Cena: " + currentItem.getPrice() + " zł");
+//        textViewForOfferCraftsmanDescription.setText("Opis: \n" + currentItem.getDetails());
 
         return convertView;
     }

@@ -23,8 +23,10 @@ public class AdapterForCraftsmanOFFers extends ArrayAdapter<CraftsmanOffers> {
         }
         TextView textViewAdapterCraftsmanOffersAllPicketOrNot = convertView.findViewById(R.id.textViewAdapterCraftsmanOffersAllPicketOrNot);
         TextView textViewAdapterCraftsmanOffersAllCityAndClientName = convertView.findViewById(R.id.textViewAdapterCraftsmanOffersAllCityAndClientName);
-        TextView textViewAdapterCraftsmanOffersAllDetail = convertView.findViewById(R.id.textViewAdapterCraftsmanOffersAllDetail);
-        TextView textViewAdapterCraftsmanOffersAllPrice = convertView.findViewById(R.id.textViewAdapterCraftsmanOffersAllPrice);
+
+        // usunięte przez klienta - opis w ActivityCraftsmanOfferToSend - w layout_forcraftsman_offers_all TextViews zmienione visibility na gone
+//        TextView textViewAdapterCraftsmanOffersAllDetail = convertView.findViewById(R.id.textViewAdapterCraftsmanOffersAllDetail);
+//        TextView textViewAdapterCraftsmanOffersAllPrice = convertView.findViewById(R.id.textViewAdapterCraftsmanOffersAllPrice);
 
         //pokaże textView z informacją że zlecenie jest zatwierdzone przez klienta dla tego craftsmana jeśli: 1. oferta została wybrana przez klienta
         if (!currentItem.getOffer_picked_at().equals("")) {         // jeśli oferta została wybrana przez klienta to jest data wybrania tej oferty - nieważne który craftman został wybrany to u każdego to się pokazę
@@ -40,8 +42,10 @@ public class AdapterForCraftsmanOFFers extends ArrayAdapter<CraftsmanOffers> {
             textViewAdapterCraftsmanOffersAllPicketOrNot.setTextColor(Color.GRAY);
         }
         textViewAdapterCraftsmanOffersAllCityAndClientName.setText("Nazwa klienta: " + currentItem.getClient_name() + "\nMiasto: " + currentItem.getCity() + "\nOpis zlecenia: " + currentItem.getDescription());
-        textViewAdapterCraftsmanOffersAllDetail.setText("Moja oferta: \n " + currentItem.getOffer_details());
-        textViewAdapterCraftsmanOffersAllPrice.setText("Moja cena: " + currentItem.getOffer_price() + " zł");
+
+        // usunięte przez klienta - opis w ActivityCraftsmanOfferToSend
+//        textViewAdapterCraftsmanOffersAllDetail.setText("Moja oferta: \n " + currentItem.getOffer_details());
+//        textViewAdapterCraftsmanOffersAllPrice.setText("Moja cena: " + currentItem.getOffer_price() + " zł");
 
         return convertView;
     }

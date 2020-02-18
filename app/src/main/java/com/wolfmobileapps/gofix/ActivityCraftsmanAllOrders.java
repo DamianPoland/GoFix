@@ -13,6 +13,7 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.android.volley.DefaultRetryPolicy;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
@@ -20,8 +21,10 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonArrayRequest;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
+import com.google.gson.Gson;
 
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
@@ -97,12 +100,79 @@ public class ActivityCraftsmanAllOrders extends AppCompatActivity {
                     builder.setPositiveButton("TAK", new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
-                            Intent currentIntent = new Intent(ActivityCraftsmanAllOrders.this, ActivityCraftsmanOfferToSend.class);
+
+                            // zrezygnowaklient z tego - opis o co chodzi jest w ActivityCraftsmanOfferToSend
+//                            Intent currentIntent = new Intent(ActivityCraftsmanAllOrders.this, ActivityCraftsmanOfferToSend.class);
+//                            OrderCraftsman currentOrder = (OrderCraftsman) listViewOfOrdersCraftsman.getItemAtPosition(position);
+//                            int orderId = currentOrder.getId();
+//                            currentIntent.putExtra("orderId", orderId);
+//                            startActivity(currentIntent);
+//                            finish();
+
+                            // zamiast tego wyżej odrazu wysyła ofertę craftsmana na serwer
+                            // pobranie danych i utworzenie obiektu CraftsmanOfferToSend
                             OrderCraftsman currentOrder = (OrderCraftsman) listViewOfOrdersCraftsman.getItemAtPosition(position);
                             int orderId = currentOrder.getId();
-                            currentIntent.putExtra("orderId", orderId);
-                            startActivity(currentIntent);
-                            finish();
+                            String details = "empty";
+                            int price = 0;
+                            Log.d(TAG, "onClick: \norderId: " + orderId + "\ndetails: " + details + "\nprice: " + price);
+                            CraftsmanOfferToSend craftsmanOfferToSend = new CraftsmanOfferToSend(orderId, details, price);
+
+                            // wysłanie obiektu CraftsmanOfferToSend na server
+                            Gson gson = new Gson();
+                            String descriptionString = gson.toJson(craftsmanOfferToSend);
+                            try {
+                                JSONObject jsonCraftsmanOffer = new JSONObject(descriptionString);
+
+                                // metoda wysyłająca na server
+                                RequestQueue queue = Volley.newRequestQueue(ActivityCraftsmanAllOrders.this);
+                                String url = C.API + "craftsman/offer"; //url
+                                Log.d(TAG, "sendLogin: url: " + url);
+                                JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, url, jsonCraftsmanOffer, new Response.Listener<JSONObject>() {
+                                    @Override
+                                    public void onResponse(JSONObject response) {
+
+                                        // po udanym wysłaniu - zwraca pusty JSON
+                                        showAlertDialog("Potwierdzenie", "Zlecenie zostało wysłane");
+                                        Log.d(TAG, "JSONObject response: " + response.toString());
+                                    }
+                                }, new Response.ErrorListener() {
+                                    @Override
+                                    public void onErrorResponse(VolleyError error) {
+
+                                        // do something when error
+                                        int errorCodeResponse = error.networkResponse.statusCode; // jeśli inny niż 200 to tu się pojawi cod błędu i trzeba go obsłużyć, jeśli 200 to succes i nie włączt wogle metody onErrorResponse
+                                        Log.d(TAG, "onErrorResponse: resp: " + errorCodeResponse);
+                                        if (errorCodeResponse == 401) {
+                                            showAlertDialog("Error", "Błąd autoryzacji. Zaloguj się ponownie");
+                                        }
+                                        if (errorCodeResponse == 422) {
+                                            showAlertDialog("Error", "Błąd danych");
+                                        }
+                                    }
+                                }) {    //this is the part, that adds the header to the request
+                                    @Override
+                                    public Map<String, String> getHeaders() {
+                                        Map<String, String> params = new HashMap<String, String>();
+                                        params.put("Content-Type", "application/json"); //  header format wysłanej wiadomości - JSON
+                                        params.put("Accept", "application/json"); //  header format otrzymanej wiadomości -JSON
+                                        params.put("Consumer", C.HEDDER_CUSTOMER); //  header Consumer
+                                        params.put("Authorization", C.HEDDER_BEARER + shar.getString(C.KEY_FOR_SHAR_TOKEN, "")); //  header Authorization
+                                        return params;
+                                    }
+                                };
+
+                                // liczba ponownych requestów to zero i czeka 50s
+                                jsonObjectRequest.setRetryPolicy(new DefaultRetryPolicy(
+                                        50000,
+                                        0,
+                                        DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
+
+                                queue.add(jsonObjectRequest); //wywołanie klasy
+
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
                         }
                     }).setNegativeButton("NIE", new DialogInterface.OnClickListener() {
                         @Override
@@ -161,5 +231,22 @@ public class ActivityCraftsmanAllOrders extends AppCompatActivity {
             }
         };
         queue.add(jsonArrayRequest); //wywołanie klasy
+    }
+
+    // utworzenie alert Didalog
+    public void showAlertDialog(final String titule, String alertMessage) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(ActivityCraftsmanAllOrders.this);
+        builder.setTitle(titule);
+        builder.setMessage(alertMessage);
+        builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                if (titule.equals("Potwierdzenie")){
+                    startActivity(new Intent(ActivityCraftsmanAllOrders.this, ActivityCraftsmanData.class));
+                    finish();
+                }
+            }
+        }).create();
+        builder.show();
     }
 }

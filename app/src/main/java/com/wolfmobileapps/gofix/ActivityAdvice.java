@@ -26,7 +26,7 @@ public class ActivityAdvice extends AppCompatActivity {
         getSupportActionBar().setTitle("Nasza rada");
 
         String textAdvice = "Polska to duży kraj mający wielu wspaniałych, doświadczonych i wykwalifikowanych fachowców – polskich i zagranicznych.\n" +
-                "\nJak w tym gąszczu rozpoznać prawdziwego fachowca? Oto nasza rola." +
+                "\nJak w tym gąszczu rozpoznać prawdziwego fachowca? Oto nasza rada:" +
                 "\n\n1. Fachowiec jest zawsze na czas." +
                 "\n\n2. Fachowiec dotrzymuje słowa." +
                 "\n\n3. Fachowiec zawsze doradzi." +

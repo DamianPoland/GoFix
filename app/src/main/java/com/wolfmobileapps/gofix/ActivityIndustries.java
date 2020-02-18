@@ -282,9 +282,9 @@ public class ActivityIndustries extends AppCompatActivity {
             @Override
             public void onClick(DialogInterface dialog, int which) {
 
-                // czyszczenie tokena w shar pref żeby wylogować
-                editor.putString(C.KEY_FOR_SHAR_TOKEN, "");
-                editor.apply();
+                // wylogowywanie n aserwerze - czyści na serwerze token do notifications, przy ponownym logowaniu token jest wysyłany jeszcze raz
+                LogOut logOut = new LogOut();
+                logOut.logOut(ActivityIndustries.this);
             }
         }).setNegativeButton("NIE", new DialogInterface.OnClickListener() {
             @Override

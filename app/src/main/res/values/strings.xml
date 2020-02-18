@@ -8,6 +8,11 @@
 
     <string name="app_name">GoFix</string>
 
+    <string name="store_name" translatable="false">My Online Store</string>
+    <string name="googlepay_status_unavailable" translatable="false">Google Pay nie jest dostępne na tym telefonie.</string>
+    <string name="googlepay_status_checking" translatable="false">Sprawdzanie Google Pay...</string>
+    <string name="payments_show_name" translatable="false">Płatność otrzymana.</string>
+
 
     <string name="privacy_policy_description">This SERVICE is provided by Wolf Mobile Apps.
         \n\nThis page is used to inform visitors regarding our policies with the collection, use, and disclosure of Personal Information if anyone decided to use our Service.

@@ -95,9 +95,9 @@ public class ActivityOrderDescription extends AppCompatActivity {
                     showAlertDialog("Error", "Dodaj opis"); // utworzenie alert Didalog
                     return;
                 }
-                // sprawdzenie czy editTextDescription nie jest < 5
-                if (editTextDescription.getText().toString().length() < 5) {
-                    showAlertDialog("Error", "Opis jest za krótki. Nusi być minimum 50 znaków"); // utworzenie alert Didalog
+                // sprawdzenie czy editTextDescription nie jest < 10
+                if (editTextDescription.getText().toString().length() < 10) {
+                    showAlertDialog("Error", "Opis jest za krótki. Nusi być minimum 10 znaków"); // utworzenie alert Didalog
                     return;
                 }
 

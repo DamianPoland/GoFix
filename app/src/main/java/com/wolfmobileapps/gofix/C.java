@@ -4,11 +4,23 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.util.Log;
 
+import com.android.volley.DefaultRetryPolicy;
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.Volley;
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 import static android.content.Context.MODE_PRIVATE;
 
@@ -606,7 +618,7 @@ class CraftsmanOffers {
                 String offer_picked_at = jsonObject.getString("offer_picked_at"); // data wybrania ofertycraftsmana przez klienta, jak nie to pusty string czyli "",
                 String offer_rejected_at = jsonObject.getString("offer_rejected_at"); // jeśli oferta danego craftsmana nie zostałą wybrana
 
-                CraftsmanOffers craftsmanOffers = new CraftsmanOffers(id, service_id,description, created_at, closed_at, city, client_name, offer_price, offer_details, offer_picked_at, offer_rejected_at);
+                CraftsmanOffers craftsmanOffers = new CraftsmanOffers(id, service_id, description, created_at, closed_at, city, client_name, offer_price, offer_details, offer_picked_at, offer_rejected_at);
                 listOfCraftsmanOFFersAll.add(craftsmanOffers);
                 Log.d(TAG, "getDataFromUrlResponse:craftsmanOffers: " + craftsmanOffers.toString());
             } catch (JSONException e) {
@@ -723,3 +735,135 @@ class CraftsmanOffers {
     }
 }
 
+//_______________________________________________________________________________________________________________________________________________________________________________________
+
+
+// clasa do wysyłąnia na serwer tokena żeby otrzymywać notifications
+class TokenForNotifications {
+
+    private static final String TAG = "TokenForNotifications";
+
+    // metoda do wysłąnia na serwer tokena do otrzymywania notyfications
+    public void sendTokenToSerwer(Context context) {
+        // pobranie z shar pref tokena tego urzadzenia połączonego z bazą firebase
+        final SharedPreferences shar = context.getSharedPreferences("sharName", MODE_PRIVATE);
+        String token_notifications = shar.getString(C.KEY_FOR_NOTIFICATIONS_SHAR, "");
+        Log.d(TAG, "token_notifications: " + token_notifications);
+        String tokenString = "{\"token_notifications\": \"" + token_notifications + "\"}";
+        Log.d(TAG, "tokenString: " + tokenString);
+
+        Log.d(TAG, "sendTokenToSerwer: Authorization: " + shar.getString(C.KEY_FOR_SHAR_TOKEN, ""));
+
+        try {
+            JSONObject jsonToken = new JSONObject(tokenString);
+
+            // wysłąnie tokena do notifications na serwer
+            RequestQueue queue = Volley.newRequestQueue(context);
+            String url = C.API + "user/mobile"; //url
+            Log.d(TAG, "sendLogin: url: " + url);
+
+            JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.PUT, url, jsonToken, new Response.Listener<JSONObject>() {
+                @Override
+                public void onResponse(JSONObject response) {
+
+                    // po udanym wysłaniu - zwraca pusty JSON
+                    Log.d(TAG, "JSONObject response TokenForNotifications send success: " + response.toString());
+                }
+            }, new Response.ErrorListener() {
+                @Override
+                public void onErrorResponse(VolleyError error) {
+
+                    // do something when error
+                    int errorCodeResponse = error.networkResponse.statusCode; // jeśli inny niż 200 to tu się pojawi cod błędu i trzeba go obsłużyć, jeśli 200 to succes i nie włączt wogle metody onErrorResponse
+                    Log.d(TAG, "onErrorResponse TokenForNotifications send error: resp: " + errorCodeResponse);
+                    Log.d(TAG, "onErrorResponse error: " + error);
+                }
+            }) {    //this is the part, that adds the header to the request
+                @Override
+                public Map<String, String> getHeaders() {
+                    Map<String, String> params = new HashMap<String, String>();
+                    params.put("Content-Type", "application/json"); //  header format wysłanej wiadomości - JSON
+                    params.put("Accept", "application/json"); //  header format otrzymanej wiadomości -JSON
+                    params.put("Consumer", C.HEDDER_CUSTOMER); //  header Consumer
+                    params.put("Authorization", C.HEDDER_BEARER + shar.getString(C.KEY_FOR_SHAR_TOKEN, "")); //  header Authorization
+                    return params;
+                }
+            };
+
+            // liczba ponownych requestów to zero i czeka 50s
+            jsonObjectRequest.setRetryPolicy(new DefaultRetryPolicy(
+                    50000,
+                    0,
+                    DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
+
+            queue.add(jsonObjectRequest); //wywołanie klasy
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+    }
+}
+
+//_______________________________________________________________________________________________________________________________________________________________________________________
+
+class LogOut{
+
+    private static final String TAG = "LogOut";
+
+    public void logOut (Context context) {
+
+        // pobranie z shar pref tokena tego urzadzenia połączonego z bazą firebase
+        final SharedPreferences shar = context.getSharedPreferences("sharName", MODE_PRIVATE);
+        final SharedPreferences.Editor editor = shar.edit();
+
+        Log.d(TAG, "sendTokenToSerwer: Authorization LogOut : " + shar.getString(C.KEY_FOR_SHAR_TOKEN, ""));
+        Log.d(TAG, "C.HEDDER_BEARER + shar.getString(C.KEY_FOR_SHAR_TOKEN, \"\") : " + C.HEDDER_BEARER + shar.getString(C.KEY_FOR_SHAR_TOKEN, ""));
+
+            // wysłąnie tokena do notifications na serwer
+            RequestQueue queue = Volley.newRequestQueue(context);
+            String url = C.API + "user/logout"; //url
+            Log.d(TAG, "sendLogin: url: " + url);
+
+            JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, url, null, new Response.Listener<JSONObject>() {
+                @Override
+                public void onResponse(JSONObject response) {
+
+                    // po udanym wysłaniu - zwraca pusty JSON
+                    Log.d(TAG, "Log out success: " + response.toString());
+
+                    // czyszczenie tokena w shar pref żeby wylogować
+                    editor.putString(C.KEY_FOR_SHAR_TOKEN, "");
+                    editor.apply();
+                }
+            }, new Response.ErrorListener() {
+                @Override
+                public void onErrorResponse(VolleyError error) {
+
+                    // do something when error
+                    int errorCodeResponse = error.networkResponse.statusCode; // jeśli inny niż 200 to tu się pojawi cod błędu i trzeba go obsłużyć, jeśli 200 to succes i nie włączt wogle metody onErrorResponse
+                    Log.d(TAG, "Log out error code: " + errorCodeResponse);
+                    Log.d(TAG, "OnErrorResponse: " + error);
+                }
+            }) {    //this is the part, that adds the header to the request
+                @Override
+                public Map<String, String> getHeaders() {
+                    Map<String, String> params = new HashMap<String, String>();
+                    params.put("Content-Type", "application/json"); //  header format wysłanej wiadomości - JSON
+                    params.put("Accept", "application/json"); //  header format otrzymanej wiadomości -JSON
+                    params.put("Consumer", C.HEDDER_CUSTOMER); //  header Consumer
+                    params.put("Authorization", C.HEDDER_BEARER + shar.getString(C.KEY_FOR_SHAR_TOKEN, "")); //  header Authorization
+                    return params;
+                }
+            };
+
+            // liczba ponownych requestów to zero i czeka 50s
+            jsonObjectRequest.setRetryPolicy(new DefaultRetryPolicy(
+                    50000,
+                    0,
+                    DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
+
+            queue.add(jsonObjectRequest); //wywołanie klasy
+
+    }
+
+}

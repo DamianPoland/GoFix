@@ -100,8 +100,7 @@ public class ActivityLogin extends AppCompatActivity {
                 // jeśli nie ma nulli i pustych stringów to wyśle login i hasło
                 String email = editTextEmail.getText().toString();
                 String haslo = editTextHaslo.getText().toString();
-                String token_notifications = shar.getString(C.KEY_FOR_NOTIFICATIONS_SHAR, "");
-                Login login = new Login(email, haslo, token_notifications);
+                Login login = new Login(email, haslo);
 
                 // zmiana instancji obiektu na jsona(trzeba zaimplementować GSON bibliotekę)
                 Gson gson = new Gson();
@@ -167,6 +166,9 @@ public class ActivityLogin extends AppCompatActivity {
                     Log.d(TAG, "onResponse token: " + token);
                     Log.d(TAG, "onResponse is_craftsman: " + is_craftsman);
 
+                    // wysłnie tokenu do powiadomień na serwer żeby pprzychoddziły powiadomienia na telefon
+                    TokenForNotifications tokenForNotifications = new TokenForNotifications();
+                    tokenForNotifications.sendTokenToSerwer(ActivityLogin.this);
 
                     // alert o poprawnym logowaniu
                     showAlertDialog(C.APPROPRIATE_LOGGING);
@@ -279,12 +281,11 @@ class Login {
 
     String email;
     String password;
-    String token_notifications;
 
-    public Login(String email, String password, String token_notifications) {
+
+    public Login(String email, String password) {
         this.email = email;
         this.password = password;
-        this.token_notifications = token_notifications;
     }
 
     public String getEmail() {
@@ -303,11 +304,4 @@ class Login {
         this.password = password;
     }
 
-    public String getToken_notifications() {
-        return token_notifications;
-    }
-
-    public void setToken_notifications(String token_notifications) {
-        this.token_notifications = token_notifications;
-    }
 }

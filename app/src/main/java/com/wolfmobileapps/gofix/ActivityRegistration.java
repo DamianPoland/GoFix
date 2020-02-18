@@ -291,8 +291,7 @@ public class ActivityRegistration extends AppCompatActivity {
                 String apiUrl = C.API + "user/confirm"; //Url do wysłąnie na server
                 Gson gson = new Gson();
                 int tokenFromEditText = Integer.parseInt(editTextTokenFromEmail.getText().toString());
-                String token_notifications = shar.getString(C.KEY_FOR_NOTIFICATIONS_SHAR, "");
-                TokenNumber tokenNumberItem = new TokenNumber(tokenFromEditText, currentEMail, token_notifications);
+                TokenNumber tokenNumberItem = new TokenNumber(tokenFromEditText, currentEMail);
                 String tokenString = gson.toJson(tokenNumberItem);
                 try {
                     JSONObject jsonObjectToken = new JSONObject(tokenString);
@@ -431,6 +430,10 @@ public class ActivityRegistration extends AppCompatActivity {
                     boolean is_craftsman = response.getBoolean("is_craftsman"); // pobranie info czy to zwykły user czy craftsman
                     editor.putBoolean(C.KEY_FOR_SHAR_IS_CRAFTSMAN, is_craftsman); // zapisanie do shar info czy to zwykły user czy craftsman
                     editor.apply();
+
+                    // wysłnie tokenu do powiadomień na serwer żeby pprzychoddziły powiadomienia na telefon
+                    TokenForNotifications tokenForNotifications = new TokenForNotifications();
+                    tokenForNotifications.sendTokenToSerwer(ActivityRegistration.this);
 
                     // alert o poprawnym logowaniu
                     showAlertDialog(C.APPROPRIATE_LOGGING);
@@ -789,12 +792,10 @@ class TokenNumber {
 
     int token;
     String email;
-    String token_notifications;
 
-    public TokenNumber(int token, String email, String token_notifications) {
+    public TokenNumber(int token, String email) {
         this.token = token;
         this.email = email;
-        this.token_notifications = token_notifications;
     }
 
     public int getToken() {
@@ -813,11 +814,4 @@ class TokenNumber {
         this.email = email;
     }
 
-    public String getToken_notifications() {
-        return token_notifications;
-    }
-
-    public void setToken_notifications(String token_notifications) {
-        this.token_notifications = token_notifications;
-    }
 }

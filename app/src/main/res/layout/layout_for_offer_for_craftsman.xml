@@ -30,7 +30,8 @@
             android:padding="8dp"
             android:text="order"
             android:textColor="@android:color/black"
-            android:textSize="16sp" />
+            android:textSize="16sp"
+            android:visibility="gone"/>
 
 
         <TextView
@@ -40,7 +41,8 @@
             android:padding="8dp"
             android:text="order"
             android:textColor="@android:color/black"
-            android:textSize="16sp" />
+            android:textSize="16sp"
+            android:visibility="gone"/>
 
         <TextView
             android:id="@+id/textViewForOfferCraftsmanStars"

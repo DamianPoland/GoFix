@@ -1,11 +1,17 @@
 package com.wolfmobileapps.gofix;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
+import androidx.core.graphics.drawable.DrawableCompat;
 
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Color;
+import android.graphics.PorterDuff;
+import android.graphics.drawable.Drawable;
+import android.graphics.drawable.LayerDrawable;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -101,8 +107,8 @@ public class ActivityUserMain extends AppCompatActivity {
         listViewUserOrdersMain.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-
                 OrderUser orderUserCurrent = (OrderUser) listViewUserOrdersMain.getItemAtPosition(position);
+
                 orderID = orderUserCurrent.getId(); // pobranie order ID danego itema OrderUser
 
                 // jeśli będzie już wybrany wykonawca to przycisk będzie wystawiał ocenę a nie przenośił do listy wykonawców
@@ -142,8 +148,10 @@ public class ActivityUserMain extends AppCompatActivity {
 
                 // dodanie listy Orders z response
                 OrderUser orderUser = new OrderUser(ActivityUserMain.this);
+                listOfOrders.clear();
                 listOfOrders.addAll(orderUser.putOrdersToArrayList(response, listOfIndustriesAndServicesAcoordingToServiceID));
                 adapterForUserOrders.notifyDataSetChanged();
+
             }
         }, new Response.ErrorListener() {
             @Override
@@ -176,6 +184,12 @@ public class ActivityUserMain extends AppCompatActivity {
                 LinearLayout.LayoutParams.WRAP_CONTENT
         );
         RatingBar rating = new RatingBar(this);
+
+
+
+        LayerDrawable stars = (LayerDrawable) rating.getProgressDrawable();
+        stars.getDrawable(2).setColorFilter(Color.YELLOW, PorterDuff.Mode.SRC_ATOP);
+
         rating.setLayoutParams(lp);
         rating.setNumStars(5);
         rating.setStepSize(0.5f);

@@ -126,25 +126,74 @@
 
                 </LinearLayout>
 
-                <Button
-                    android:id="@+id/buttonChangeCraftsmanData"
-                    android:layout_width="wrap_content"
+                <LinearLayout
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_gravity="center_vertical"
-                    android:layout_marginStart="16dp"
-                    android:background="@drawable/button_custom"
-                    android:text="  Zmień dane  "
-                    android:textAllCaps="false"
-                    android:textColor="@color/colorBlack"
-                    android:textSize="12sp" />
+                    android:layout_marginStart="8dp"
+                    android:layout_marginEnd="8dp"
+                    android:orientation="horizontal">
+
+                    <Button
+                        android:id="@+id/buttonChangeCraftsmanData"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_vertical"
+                        android:layout_marginStart="16dp"
+                        android:background="@drawable/googlepay_button_background"
+                        android:text="  Zmień dane  "
+                        android:textAllCaps="false"
+                        android:textSize="14sp" />
+
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="8dp"
+                        android:orientation="vertical">
+
+                        <TextView
+
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center_horizontal"
+                            android:text="Kup punkty"
+                            android:textSize="10sp"
+                            android:textColor="@color/colorBlack"
+                            android:padding="4dp"/>
+
+                        <ImageView
+                            android:id="@+id/googlepay_button"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="8dp"
+                            android:background="@drawable/googlepay_button_background"
+                            android:paddingTop="16dp"
+                            android:paddingBottom="16dp"
+                            android:paddingStart="8dp"
+                            android:paddingEnd="8dp"
+                            android:src="@drawable/buy_with_googlepay_button_content" />
+
+                        <TextView
+                            android:id="@+id/googlepay_status"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center_horizontal"
+                            android:text="Status Google Pay "
+                            android:textSize="10sp"
+                            android:textColor="@color/colorBlack"
+                            android:padding="4dp"/>
+
+                    </LinearLayout>
+
+
+                </LinearLayout>
 
             </LinearLayout>
 
             <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:layout_gravity="center_horizontal">
+                android:layout_gravity="center_horizontal"
+                android:orientation="vertical">
 
 
                 <Button
@@ -156,8 +205,7 @@
                     android:layout_marginBottom="16dp"
                     android:background="@drawable/button_custom_dark"
                     android:text="  Wszystkie oferty w okolicy  "
-                    android:textColor="@color/colorWhite"
-/>
+                    android:textColor="@color/colorWhite" />
 
                 <Button
                     android:id="@+id/buttonCraftmanOFFersAll"

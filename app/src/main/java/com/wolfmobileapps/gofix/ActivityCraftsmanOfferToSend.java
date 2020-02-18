@@ -27,6 +27,21 @@ import org.json.JSONObject;
 import java.util.HashMap;
 import java.util.Map;
 
+
+
+
+
+// Activity NIE używane bo Klient zrezygnował z tego. Działało to tak, że w ActivityCraftsmanAllOrders w listViewOfOrdersCraftsman.setOnItemClickListener/else po kliknięciu w alert dialog przenosiło
+// tu i było tworzone offer z opisem i ceną za wykonanie pracy. Teraz się wysyła tylko udział w zleceniu i nie potrzeba opisu i ceny więc wogle nie przenosi na tą stronę tylko odrazy wysyła ofertę z
+// ActivityCraftsmanAllOrders  w listViewOfOrdersCraftsman.setOnItemClickListener/else pomijając to Activity
+// Zmiany w : ActivityCraftsmanAllOrders, AdapterForCraftsmanOFFers, layout_forcraftsman_offers_all, AdapterForOfferFromCraftsman, layout_for_offer_for_craftsman, AdapterForUserOrders
+
+
+
+
+
+
+
 public class ActivityCraftsmanOfferToSend extends AppCompatActivity {
 
     private static final String TAG = "AcCraftsmanOfferToSend";
