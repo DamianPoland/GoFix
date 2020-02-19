@@ -11,6 +11,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -41,6 +42,7 @@ public class ActivityOrderDescription extends AppCompatActivity {
     private TextView textViewServiceInOrder;
     private EditText editTextDescription;
     private Button buttonSendInDescription;
+    private ProgressBar progressBarWaiting;
 
     // zmienne do wysłąnia naserwer
     private int industryID;
@@ -60,6 +62,7 @@ public class ActivityOrderDescription extends AppCompatActivity {
         textViewServiceInOrder = findViewById(R.id.textViewServiceInOrder);
         editTextDescription = findViewById(R.id.editTextDescription);
         buttonSendInDescription = findViewById(R.id.buttonSendInDescription);
+        progressBarWaiting = findViewById(R.id.progressBarWaiting);
 
         // action bar
         //getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -100,6 +103,10 @@ public class ActivityOrderDescription extends AppCompatActivity {
                     showAlertDialog("Error", "Opis jest za krótki. Nusi być minimum 10 znaków"); // utworzenie alert Didalog
                     return;
                 }
+
+                // pokazanie czekania po wysłąniu ofery
+                buttonSendInDescription.setVisibility(View.GONE);
+                progressBarWaiting.setVisibility(View.VISIBLE);
 
                 // pobranie danych do wysłąnia
                 int industryIDToSend = industryID; // to nie jest potrzebne do wysyłania do API bo ID service jest jednoznaczne

@@ -111,6 +111,7 @@ public class ActivityLogin extends AppCompatActivity {
                     // wysłanie loginu i hasła
                     String url = C.API + "user/auth";
                     sendLogin(url, json);
+                    Log.d(TAG, "onClick: json: " + json);
 
                 } catch (JSONException e) {
                     Log.d(TAG, "JSONException: " + e);

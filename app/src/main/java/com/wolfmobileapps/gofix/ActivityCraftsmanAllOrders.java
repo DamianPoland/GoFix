@@ -11,6 +11,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.android.volley.DefaultRetryPolicy;
@@ -38,6 +39,7 @@ public class ActivityCraftsmanAllOrders extends AppCompatActivity {
     //views
     TextView textViewNoOrdersCraftsman;
     ListView listViewOfOrdersCraftsman;
+    ProgressBar progressBarWaiting;
 
     //shared pred
     private SharedPreferences shar;
@@ -58,6 +60,7 @@ public class ActivityCraftsmanAllOrders extends AppCompatActivity {
         //views
         textViewNoOrdersCraftsman = findViewById(R.id.textViewNoOrdersCraftsman);
         listViewOfOrdersCraftsman = findViewById(R.id.listViewOfOrdersCraftsman);
+        progressBarWaiting = findViewById(R.id.progressBarWaiting);
 
         // shar pref
         shar = getSharedPreferences("sharName", MODE_PRIVATE);
@@ -94,6 +97,7 @@ public class ActivityCraftsmanAllOrders extends AppCompatActivity {
                     builder.show();
                 } else {
 
+                    // utworzenie alert dialog
                     AlertDialog.Builder builder = new AlertDialog.Builder(ActivityCraftsmanAllOrders.this);
                     builder.setTitle("Oferta");
                     builder.setMessage("Czy chcesz wysłać ofertę do tego zlecenia?");
@@ -110,6 +114,10 @@ public class ActivityCraftsmanAllOrders extends AppCompatActivity {
 //                            finish();
 
                             // zamiast tego wyżej odrazu wysyła ofertę craftsmana na serwer
+
+                            // pokazanie czekania po wysłąniu ofery
+                            progressBarWaiting.setVisibility(View.VISIBLE);
+
                             // pobranie danych i utworzenie obiektu CraftsmanOfferToSend
                             OrderCraftsman currentOrder = (OrderCraftsman) listViewOfOrdersCraftsman.getItemAtPosition(position);
                             int orderId = currentOrder.getId();

@@ -843,6 +843,12 @@ class LogOut{
                     int errorCodeResponse = error.networkResponse.statusCode; // jeśli inny niż 200 to tu się pojawi cod błędu i trzeba go obsłużyć, jeśli 200 to succes i nie włączt wogle metody onErrorResponse
                     Log.d(TAG, "Log out error code: " + errorCodeResponse);
                     Log.d(TAG, "OnErrorResponse: " + error);
+
+                    if (errorCodeResponse == 401) {
+                        // czyszczenie tokena w shar pref żeby wylogować
+                        editor.putString(C.KEY_FOR_SHAR_TOKEN, "");
+                        editor.apply();
+                    }
                 }
             }) {    //this is the part, that adds the header to the request
                 @Override

@@ -11,6 +11,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -37,6 +38,7 @@ public class ActivityUserOffers extends AppCompatActivity {
     //views
     private TextView textViewUserNoOffersFromCraftsman;
     private ListView listViewCraftsmanOffersForUser;
+    private ProgressBar progressBarWaiting;
 
     //shared pred
     private SharedPreferences shar;
@@ -60,6 +62,7 @@ public class ActivityUserOffers extends AppCompatActivity {
         //views
         textViewUserNoOffersFromCraftsman = findViewById(R.id.textViewUserNoOffersFromCraftsman);
         listViewCraftsmanOffersForUser = findViewById(R.id.listViewCraftsmanOffersForUser);
+        progressBarWaiting = findViewById(R.id.progressBarWaiting);
 
         // shar pref
         shar = getSharedPreferences("sharName", MODE_PRIVATE);
@@ -169,6 +172,9 @@ public class ActivityUserOffers extends AppCompatActivity {
     // metoda wysyła info że oferta jest zaakceptowana
     public void sendChosedCraftsmanToServer() {
 
+        // pokazanie czekania po wysłąniu ofery
+        progressBarWaiting.setVisibility(View.VISIBLE);
+
         RequestQueue queue = Volley.newRequestQueue(this); // utworzenie requst - może być inne np o stringa lub JsonArrray
         String url = C.API + "client/offer/" + offerID + "/pick"; //url
 
@@ -179,6 +185,9 @@ public class ActivityUserOffers extends AppCompatActivity {
             public void onResponse(JSONObject response) {
                 Log.d(TAG, TAG + ", onResponse: response: " + response);
                 showAlertDialog("Wybrałeś ofertę tego Wykonawcy"); // alert dialog z opisem jak się wszystko uda i przejście do głównego activity
+
+                // usunięcie czekani
+                progressBarWaiting.setVisibility(View.GONE);
 
 
             }

@@ -19,6 +19,7 @@ import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.ProgressBar;
 import android.widget.RatingBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -49,6 +50,7 @@ public class ActivityUserMain extends AppCompatActivity {
     TextView textViewUserNoOrdersMain;
     Button buttonOrdersHistory;
     ListView listViewUserOrdersMain;
+    ProgressBar progressBarWaiting;
 
     //shared pred
     private SharedPreferences shar;
@@ -74,6 +76,7 @@ public class ActivityUserMain extends AppCompatActivity {
         textViewUserNoOrdersMain = findViewById(R.id.textViewUserNoOrdersMain);
         buttonOrdersHistory = findViewById(R.id.buttonOrdersHistory);
         listViewUserOrdersMain = findViewById(R.id.listViewUserOrdersMain);
+        progressBarWaiting = findViewById(R.id.progressBarWaiting);
 
         // action bar
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -234,6 +237,9 @@ public class ActivityUserMain extends AppCompatActivity {
     // wysłąnie ratingu danego craftsmana i zamknięcie zlecenia - przeniesienie do historii
     public void postDataToServerWithRating() {
 
+        // pokazanie czekania po wysłąniu ofery
+        progressBarWaiting.setVisibility(View.VISIBLE);
+
         RatingCraftsman ratingCraftsman = new RatingCraftsman(orderID, ratingFromUserToCraftsman);
 
         Gson gson = new Gson();
@@ -252,6 +258,9 @@ public class ActivityUserMain extends AppCompatActivity {
 
                     Log.d(TAG, TAG + ": response: " + response);
                     showAlertDialog();
+
+                    // usunięcie czekania
+                    progressBarWaiting.setVisibility(View.GONE);
 
                 }
             }, new Response.ErrorListener() {
